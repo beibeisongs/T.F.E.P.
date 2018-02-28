@@ -88,8 +88,8 @@ Attention:
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-key = "-z-GWFLRS9algPAaExP51KCpKIGmH-jJ"
-secret = "Ft-p-NQ5wNg6bWK_apS4jaMD37FHqzgG"
+key = "..."
+secret = "..."
 http_url = "https://api-cn.faceplusplus.com/facepp/v3/detect"
 
 print("请输入想要进行人脸打分的文件的所属省份")
