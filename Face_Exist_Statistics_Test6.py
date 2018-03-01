@@ -341,24 +341,37 @@ def compose_ReadJPG_Path(path, get_user_id, pic_id):
     return path  # 这个path就是要读的JPG的完整路径
 
 
+def avoid_Repeated_JSON(path):
+
+    f1 = open(path, encoding='utf-8')
+    rline = json.loads(f1.readline())
+    UMARK = rline["se_get_large_url"]   # <Function>: 储存该文件夹的第一行的"se_get_large_url"
+    return UMARK
+
+
 """
 get_Pic_id(rline)
 ~~~~~~~~~~~~~~~~~
 Discription for Function:
-    作用：返回pic_id，pic_id是该用户账号中该jpg文件的编号，如果出现异常，则pic_id = 0。
+    作用：返回pic_id，pic_id是该用户账号中该jpg文件的编号，如果出现异常，则pic_id = 'F'或'E'。
 """
 
 
-def get_Pic_id(rline):
+def get_Pic_id(rline, UMARK):
+
     try:
         get_se_url = rline["se_get_large_url"]  # 注意：该path后面有斜杠
 
-        str_divided1 = str(get_se_url).split("e/")
-        str_divided2 = str(str_divided1[1]).split(".")
-        pic_id = str_divided2[0]
-        return pic_id  # 注意：它是没有“.jpg”后缀的
+        if get_se_url != UMARK :
+
+            str_divided1 = str(get_se_url).split("e/")
+            str_divided2 = str(str_divided1[1]).split(".")
+            pic_id = str_divided2[0]
+            return pic_id  # 注意：它是没有“.jpg”后缀的
+        else :
+            return "E"
     except:
-        pic_id = 0
+        pic_id = "F"
         return pic_id
 
 
@@ -416,6 +429,8 @@ Description:
 
 def read_JsonFiles(path, get_user_id):
 
+    UMARK = avoid_Repeated_JSON(path)
+
     f1 = open(path, encoding='utf-8')
     # 候选人脸描述子list
     descriptors = []
@@ -433,9 +448,9 @@ def read_JsonFiles(path, get_user_id):
         # rline加载每一整条的JSON信息
         rline = json.loads(line)
         # 得到该pic_id
-        pic_id = get_Pic_id(rline)  # 注意：它是没有“.jpg”后缀的
+        pic_id = get_Pic_id(rline, UMARK)  # 注意：它是没有“.jpg”后缀的
 
-        if pic_id != 0:
+        if pic_id != "F":   # 即没有捕捉到异常
             # 构造要读的jpg文件的完整路径：
             path_jpg = compose_ReadJPG_Path(path, get_user_id, pic_id)  # 这个path就是要读的JPG的完整路径
 
@@ -443,6 +458,8 @@ def read_JsonFiles(path, get_user_id):
             candidates_names, descriptors, candidates_weight_dictionary, candidates_names_face_side_score_list = extract_Face_InsideJPG(
                 path_jpg, pic_id, descriptors, candidates_names, candidates_weight_dictionary, detector, sp, facerec,
                 sub_spec_face_file_path, candidates_names_facesidescore_list)
+
+        if pic_id == "E" : break  # 即发现有重复的JPG文件指向，所以退出该for循环
 
     # 现在开始遍历字典从而获取权重最大的那张脸
     belonger_list, get_face_weight_temp, get_face_name_temp = get_TheBelonger_JPGname(candidates_weight_dictionary)
@@ -477,7 +494,7 @@ def go_Through_PicsFile(province, city):
 
     path = "D:\\用户的文件\\" + str(province) + "\\" + str(city)
 
-    AccountFileNumber = 0  #To show the number the Account being read
+    AccountFileNumber = 0  # To show the number the Account being read
 
     for dirpath, dirnames, filenames in os.walk(path):
         for filepath in filenames:
