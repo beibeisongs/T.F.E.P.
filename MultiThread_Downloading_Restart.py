@@ -1,13 +1,16 @@
 # encoding=utf-8
 
+
+import re
 import json
+
 import urllib
+import urllib.request
 import urllib3
 import requests
+
 import os
-import re
 import time
-import urllib.request
 import socket
 import threading
 
@@ -62,8 +65,12 @@ def read_Json_Source(json_path_to_read, pic_num_least, province, city, get_id, s
             rline = json.loads(line)
             # 现在得到构造好的网址
             get_composed_url = rline["se_get_large_url"]
-            # 现在开始写入json文件
-            write_Json_data(path_to_write_json, rline)
+
+            # <Attention>: 这个是_Restart_.py, 鉴于之前出现了JSON重复写入的状况，在此加入判断，避免再次发生重复写入的状况
+            if shushu >= pic_restart_point :
+                # 现在开始写入json文件
+                write_Json_data(path_to_write_json, rline)
+
             # 现在开始准备下载图片
             # 先得到pic_id的序列
             get_the_JPG_id = get_The_JPG_Id(get_composed_url)
@@ -201,7 +208,7 @@ input_year = "2014"
 input_month = "07"
 pic_num_least = 1
 
-pic_restart_point = 189730
+pic_restart_point = 367200  # 这是已经在上一次下载好的图片序号
 
 # 现在开始遍历文件夹并进行用户json文件的读取、过滤、再写入以及下载图片
 create_Disk_File(input_province, input_city)
