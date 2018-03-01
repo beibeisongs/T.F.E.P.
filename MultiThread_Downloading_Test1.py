@@ -1,13 +1,16 @@
 # encoding=utf-8
 
+
+import re
 import json
+
 import urllib
+import urllib.request
 import urllib3
 import requests
+
 import os
-import re
 import time
-import urllib.request
 import socket
 import threading
 
@@ -27,17 +30,17 @@ def compose_Path_ToWrite_json(province,city,get_id):
     path_to_write = "F:\\用户的文件\\"+str(province)+"\\"+str(city)+"\\"+str(get_id)
     judgeExisting = os.path.exists(path_to_write)
     if not judgeExisting:
-        #print(str(path_to_write) + '创建成功！')
+        # print(str(path_to_write) + '创建成功！')
         os.makedirs(path_to_write)
     path_to_write_json = path_to_write+"\\"+str(get_id)+".json"
     return path_to_write_json
 
 def get_Userid(path):
     path_Divided = path.split('\\')
-    #print(path_Divided)
+    # print(path_Divided)
     get_id= path_Divided[6].split('.')
     get_id = get_id[0]
-    #print(get_id)
+    # print(get_id)
     return get_id
 
 def compose_Json_Path_ToRead(path_json_source,get_id):
@@ -53,7 +56,7 @@ def read_Json_Source(json_path_to_read,pic_num_least,province,city,get_id,shushu
         f2 = open(json_path_to_read,encoding='utf-8')
         for line in f2.readlines():
             rline = json.loads(line)
-            #现在得到构造好的网址
+            # 现在得到构造好的网址
             get_composed_url = rline["se_get_large_url"]
             # 现在开始写入json文件
             write_Json_data(path_to_write_json, rline)
@@ -94,22 +97,22 @@ def compose_JPG_Dowmload_Path(province,city,get_the_JPG_id,get_id):
 
 def Download_Pics(the_path_to_download_jpg,get_composed_url,shushu):
     class SubThread():
-        shushu = 0  #初始化为0
+        shushu = 0  # 初始化为0
         def sub_Thread_Download(the_path_to_download_jpg,get_composed_url,shushu,sub_thread1):
             try:
                 shushu = shushu+1
                 print("现在下载的图片数目是:")
                 print(shushu)
-                #print("这个url是：")
-                #print(get_composed_url)
-                #print("这个写入的路径是：")
-                #print(the_path_to_download_jpg)
+                # print("这个url是：")
+                # print(get_composed_url)
+                # print("这个写入的路径是：")
+                # print(the_path_to_download_jpg)
                 socket.setdefaulttimeout(6)
                 urllib.request.urlretrieve(get_composed_url,the_path_to_download_jpg)
-                #resp = requests.get(get_composed_url,timeout=20)
-                #f = open(the_path_to_download_jpg, 'wb')
-                #f.write(resp.content)
-                #f.close()
+                # resp = requests.get(get_composed_url,timeout=20)
+                # f = open(the_path_to_download_jpg, 'wb')
+                # f.write(resp.content)
+                # f.close()
                 if shushu%30==0:
                     print("休息一下")
                     time.sleep(2)
@@ -151,7 +154,6 @@ def gothrough_Source(path_json_source,province,city,pic_num_least):
     """
     为了能够看到下载进度，在此先计算账户总数
     """
-    
 
     for dirpath, dirnames, filenames in os.walk(path_json_source):
         for filepath in filenames:
@@ -159,7 +161,7 @@ def gothrough_Source(path_json_source,province,city,pic_num_least):
             #现在开始得到文件名上的userid
             get_id = get_Userid(path)
 
-            #现在开始读取json数据源
+            # 现在开始读取json数据源
             json_path_to_read = compose_Json_Path_ToRead(path_json_source,get_id)
             shushu = read_Json_Source(json_path_to_read,pic_num_least,province,city,get_id,shushu)
 
@@ -181,7 +183,7 @@ input_year = "2014"
 input_month = "08"
 pic_num_least = 1
 
-#现在开始遍历文件夹并进行用户json文件的读取、过滤、再写入以及下载图片
+# 现在开始遍历文件夹并进行用户json文件的读取、过滤、再写入以及下载图片
 create_Disk_File(input_province,input_city)
 
 path_json_source = get_province_city_path_ToRead(input_province,input_city,input_year,input_month)
