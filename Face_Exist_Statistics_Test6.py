@@ -321,7 +321,7 @@ def get_TheMaxSideScore_CandidateSubJpg_Name(belonger_list, candidates_names_fac
         belonger_sub_face_name = list1[0]
         belonger_sub_face_side_rate = list1[1]
         summarize_belonger_sub_name_list.append(belonger_sub_face_name)
-    return summarize_belonger_sub_name_list
+    return summarize_belonger_sub_name_list # <Tip>: 因为这个JPG文件名都是side_rate最大的人脸，所以有可能是"sub face"，所以在此变量名中添加了"sub"的缀名
 
 
 """
@@ -357,21 +357,24 @@ Discription for Function:
 """
 
 
-def get_Pic_id(rline, UMARK):
+def get_Pic_id(rline, UMARK, line_i):
 
     try:
         get_se_url = rline["se_get_large_url"]  # 注意：该path后面有斜杠
 
-        if get_se_url != UMARK :
+        if line_i != 1 :
 
-            str_divided1 = str(get_se_url).split("e/")
-            str_divided2 = str(str_divided1[1]).split(".")
-            pic_id = str_divided2[0]
-            return pic_id  # 注意：它是没有“.jpg”后缀的
-        else :
-            return "E"
+            if get_se_url != UMARK :
+
+                str_divided1 = str(get_se_url).split("e/")
+                str_divided2 = str(str_divided1[1]).split(".")
+                pic_id = str_divided2[0]
+                return pic_id  # 注意：它是没有“.jpg”后缀的
+            else :
+                return "E"
     except:
         pic_id = "F"
+
         return pic_id
 
 
@@ -443,12 +446,16 @@ def read_JsonFiles(path, get_user_id):
     # 创建一个Candidates 文件来放置提取出来的人脸,并创建一个放置新json文件的路径用来记录该账号的统计信息
     new_json_filepath, sub_spec_face_file_path = create_CandidatesResults_JsonFile(path, get_user_id)
 
+    line_i = 0
+
     for line in f1.readlines():
+
+        line_i += 1
 
         # rline加载每一整条的JSON信息
         rline = json.loads(line)
         # 得到该pic_id
-        pic_id = get_Pic_id(rline, UMARK)  # 注意：它是没有“.jpg”后缀的
+        pic_id = get_Pic_id(rline, UMARK, line_i)  # 注意：它是没有“.jpg”后缀的
 
         if pic_id != "F":   # 即没有捕捉到异常
             # 构造要读的jpg文件的完整路径：
@@ -508,7 +515,7 @@ def go_Through_PicsFile(province, city):
             if path_Divided[1] == 'json':
 
                 print(get_user_id)
-                AccountFileNumber += 1;
+                AccountFileNumber += 1
                 print("这是第 %i 个账号" % (AccountFileNumber))
 
                 read_JsonFiles(path, get_user_id)
