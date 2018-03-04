@@ -129,8 +129,14 @@ def Download_Pics(the_path_to_download_jpg,get_composed_url,shushu):
             except:
 
                 mark_state = True
+
+                n_error_times = 0   # 记录报错次数
+
                 while mark_state:
-                    print("下载超时了。。")
+
+                    n_error_times += 1
+
+                    print("下载超时或出错了。。")
                     # time.sleep(1)
                     print("现在重新连接。。")
                     try:
@@ -138,21 +144,27 @@ def Download_Pics(the_path_to_download_jpg,get_composed_url,shushu):
                         f = open(the_path_to_download_jpg, 'wb')
                         f.write(resp.content)
                         f.close()
+
+                        judgeExisting = os.path.exists(the_path_to_download_jpg)
+                        if judgeExisting:
+                            mark_state = False
                     except :
                         mark_state = True
 
-                    judgeExisting = os.path.exists(the_path_to_download_jpg)
-                    if judgeExisting:
-                        mark_state = False
+                    if n_error_times % 50 == 0:
 
-                if shushu%30==0:
+                        time.sleep(1)
+                        n_error_times = 0
+                        print()
+
+                if shushu % 30 == 0 :
                     print("休息一下")
                     time.sleep(3)
 
             sub_thread1.shushu = shushu
 
     class GetShushu():
-        shushu = 0  #初始化为0
+        shushu = 0  # 初始化为0
 
     sub_thread1 = SubThread()
     sub_thread1.shushu = shushu
@@ -175,7 +187,7 @@ def gothrough_Source(path_json_source,province,city,pic_num_least):
     for dirpath, dirnames, filenames in os.walk(path_json_source):
         for filepath in filenames:
             path = os.path.join(dirpath, filepath)
-            #现在开始得到文件名上的userid
+            # 现在开始得到文件名上的userid
             get_id = get_Userid(path)
 
             # 现在开始读取json数据源
@@ -197,7 +209,7 @@ pic_num_least = input()
 input_province = "湖北省"
 input_city = "武汉市"
 input_year = "2014"
-input_month = "09"
+input_month = "10"
 pic_num_least = 1
 
 # 现在开始遍历文件夹并进行用户json文件的读取、过滤、再写入以及下载图片
