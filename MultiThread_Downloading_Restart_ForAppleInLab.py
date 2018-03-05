@@ -16,7 +16,7 @@ import threading
 
 
 def create_Disk_File(province, city):
-    path2 = "E:\\用户的文件\\" + str(province) + "\\" + str(city)
+    path2 = "F:\\用户的文件\\" + str(province) + "\\" + str(city)
     judgeExisting = os.path.exists(path2)
     if not judgeExisting:
         print(str(path2) + '创建成功！')
@@ -25,12 +25,12 @@ def create_Disk_File(province, city):
 
 
 def get_province_city_path_ToRead(province, city, input_year, input_month):
-    path_json_source = "E:\\Fast_Prepared_Json\\" + str(province) + "\\" + str(city) + "\\" + input_year + "\\" + input_month
+    path_json_source = "F:\\Fast_Prepared_Json\\" + str(province) + "\\" + str(city) + "\\" + input_year + "\\" + input_month
     return path_json_source
 
 
 def compose_Path_ToWrite_json(province, city, get_id):
-    path_to_write = "E:\\用户的文件\\" + str(province) + "\\" + str(city) + "\\" + str(get_id)
+    path_to_write = "F:\\用户的文件\\" + str(province) + "\\" + str(city) + "\\" + str(get_id)
     judgeExisting = os.path.exists(path_to_write)
     if not judgeExisting:
         # print(str(path_to_write) + '创建成功！')
@@ -66,7 +66,7 @@ def read_Json_Source(json_path_to_read, pic_num_least, province, city, get_id, s
             get_composed_url = rline["se_get_large_url"]
 
             # <Attention>: 这个是_Restart_.py, 鉴于之前出现了JSON重复写入的状况，在此加入判断，避免再次发生重复写入的状况
-            if shushu >= pic_restart_point :
+            if shushu >= pic_restart_point :    # <Attention>: 注意：是大于或等于 pic_restart_point
                 # 现在开始写入json文件
                 write_Json_data(path_to_write_json, rline)
 
@@ -107,7 +107,7 @@ def get_The_JPG_Id(get_composed_url):
 
 
 def compose_JPG_Dowmload_Path(province, city, get_the_JPG_id, get_id):
-    path = "E:\\用户的文件\\" + str(province) + "\\" + str(city) + "\\" + str(get_id) + "\\" + str(get_the_JPG_id) + ".jpg"
+    path = "F:\\用户的文件\\" + str(province) + "\\" + str(city) + "\\" + str(get_id) + "\\" + str(get_the_JPG_id) + ".jpg"
     return path
 
 
@@ -163,10 +163,6 @@ def Download_Pics(the_path_to_download_jpg, get_composed_url, shushu):
                         f = open(the_path_to_download_jpg, 'wb')
                         f.write(resp.content)
                         f.close()
-
-                        judgeExisting = os.path.exists(the_path_to_download_jpg)
-                        if judgeExisting:
-                            mark_state = False
                     except :
                         mark_state = True
 
@@ -175,6 +171,10 @@ def Download_Pics(the_path_to_download_jpg, get_composed_url, shushu):
                         time.sleep(1)
                         n_error_times = 0
                         print()
+
+                    judgeExisting = os.path.exists(the_path_to_download_jpg)
+                    if judgeExisting:
+                        mark_state = False
 
 
                 if shushu % 30 == 0 :
@@ -234,10 +234,10 @@ pic_restart_point = input()
 input_province = "湖北省"
 input_city = "武汉市"
 input_year = "2014"
-input_month = "10"
+input_month = "09"
 pic_num_least = 1
 
-pic_restart_point = 0  # 这是已经在上一次下载好的图片序号
+pic_restart_point = 49860  # 这是已经在上一次下载好的图片序号
 
 # 现在开始遍历文件夹并进行用户json文件的读取、过滤、再写入以及下载图片
 create_Disk_File(input_province, input_city)
@@ -248,3 +248,4 @@ gothrough_Source(path_json_source, input_province, input_city, pic_num_least)
 
 print("Ok!")
 mark = input()
+
