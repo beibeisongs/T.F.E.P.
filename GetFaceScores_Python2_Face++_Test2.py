@@ -95,6 +95,9 @@ Attention:
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+key = "-z-GWFLRS9algPAaExP51KCpKIGmH-jJ"
+secret = "Ft-p-NQ5wNg6bWK_apS4jaMD37FHqzgG"
+http_url = "https://api-cn.faceplusplus.com/facepp/v3/detect"
 
 print("请输入想要进行人脸打分的文件的所属省份")
 # province = input()
@@ -104,7 +107,7 @@ print("请输入想要进行人脸打分的文件的所属城市")
 # city = input()
 city = "广州市"
 
-path = ( "D:\\用户的文件\\" + province + "\\" + city ).encode('utf-8')
+path = ( "C:\\用户的文件\\" + province + "\\" + city ).encode('utf-8')
 path = path.decode('utf-8')
 
 for dirpath, dirnames, filenames in os.walk(path):
@@ -130,7 +133,7 @@ for dirpath, dirnames, filenames in os.walk(path):
 
                     response = Get_TheFaceScore(belongerFace_JPG_Wholepath)
 
-                    json_FaceScore_TheWholePath = dirpath + "\\" + belonger_i + "\\" + "Face_Score.json"
+                    json_FaceScore_TheWholePath = dirpath + "\\" + belonger[belonger_i] + "\\" + "Face_Score.json"
 
                     f1 = open_Json_File_To_Write(json_FaceScore_TheWholePath)
 
