@@ -84,13 +84,19 @@ Attention:
     The codes following are the Main Thread.
 """
 
+"""
+Attention:
+    key = "-z-GWFLRS9algPAaExP51KCpKIGmH-jJ"
+    secret = "Ft-p-NQ5wNg6bWK_apS4jaMD37FHqzgG"
+    http_url = "https://api-cn.faceplusplus.com/facepp/v3/detect"
+Attention:
+    Above follows the "sys...."
+"""
+
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-key = "..."
-secret = "..."
-http_url = "https://api-cn.faceplusplus.com/facepp/v3/detect"
 
 print("请输入想要进行人脸打分的文件的所属省份")
 # province = input()
@@ -115,9 +121,9 @@ for dirpath, dirnames, filenames in os.walk(path):
                 json_results_source_wholepath = dirpath + "\\" + filepath   # <Sample>: # <Sample>: u'D:\\用户的文件\\广东省\\广州市\\18811860\\18811860_results.json'
                 belonger, belonger_sub_face = get_JsonResultsSource_Belonger(json_results_source_wholepath)  # 注意 : 这两个变量是一个list
 
-                for belonger_i in belonger_sub_face :  # <Sample>: belonger = <type 'list'>: [u'011f0bd4jw1ek0s5x0uysj20qo0zkwn2_extraction_1', u'011f0bd4jw1ekdf0acjsmj218g0xcduc_extraction_1']
+                for belonger_i in range(0, len(belonger)) :  # <Sample>: belonger = <type 'list'>: [u'011f0bd4jw1ek0s5x0uysj20qo0zkwn2_extraction_1', u'011f0bd4jw1ekdf0acjsmj218g0xcduc_extraction_1']
 
-                    belongerFace_JPG_Wholepath = dirpath + "\\" + belonger_i + "\\" + belonger_i + ".jpg"   # <Samples>: dirpath = u'D:\\用户的文件\\广东省\\广州市\\18811860'
+                    belongerFace_JPG_Wholepath = dirpath + "\\" + belonger[belonger_i] + "\\" + belonger_sub_face[belonger_i] + ".jpg"   # <Samples>: dirpath = u'D:\\用户的文件\\广东省\\广州市\\18811860'
 
                     size = Calculate_JPGsize(belongerFace_JPG_Wholepath)
 
