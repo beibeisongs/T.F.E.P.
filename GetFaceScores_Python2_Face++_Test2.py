@@ -75,8 +75,8 @@ def get_JsonResultsSource_Belonger(json_results_source_wholepath):
     for line in f1.readlines():
         rline = json.loads(line)
         belonger = rline["Belonger"]    # <Sample>: <type 'list'>: [u'011f0bd4jw1ek0s5x0uysj20qo0zkwn2_extraction_1', u'011f0bd4jw1ekdf0acjsmj218g0xcduc_extraction_1']
-
-    return belonger
+        sub_face_for_belonger = rline["Belonger_sub_face_name"] # <Description>: "Belonger_sub_face_name" is the key to the faces of best side_score of the account's belonger
+    return belonger, sub_face_for_belonger
 
 
 """
@@ -112,10 +112,10 @@ for dirpath, dirnames, filenames in os.walk(path):
         if str1 in filepath:
             if str2 in filepath:
 
-                json_results_source_wholepath = dirpath + "\\" + filepath   # <Sample>: u'D:\\用户的文件\\广东省\\广州市\\18811860\\18811860_results.json'
-                belonger = get_JsonResultsSource_Belonger(json_results_source_wholepath)  # 注意 : belonger是一个list
+                json_results_source_wholepath = dirpath + "\\" + filepath   # <Sample>: # <Sample>: u'D:\\用户的文件\\广东省\\广州市\\18811860\\18811860_results.json'
+                belonger, belonger_sub_face = get_JsonResultsSource_Belonger(json_results_source_wholepath)  # 注意 : 这两个变量是一个list
 
-                for belonger_i in belonger :  # <Sample>: belonger = <type 'list'>: [u'011f0bd4jw1ek0s5x0uysj20qo0zkwn2_extraction_1', u'011f0bd4jw1ekdf0acjsmj218g0xcduc_extraction_1']
+                for belonger_i in belonger_sub_face :  # <Sample>: belonger = <type 'list'>: [u'011f0bd4jw1ek0s5x0uysj20qo0zkwn2_extraction_1', u'011f0bd4jw1ekdf0acjsmj218g0xcduc_extraction_1']
 
                     belongerFace_JPG_Wholepath = dirpath + "\\" + belonger_i + "\\" + belonger_i + ".jpg"   # <Samples>: dirpath = u'D:\\用户的文件\\广东省\\广州市\\18811860'
 
