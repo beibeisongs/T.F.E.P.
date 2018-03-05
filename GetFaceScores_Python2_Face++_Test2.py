@@ -89,8 +89,6 @@ Attention:
     key = "-z-GWFLRS9algPAaExP51KCpKIGmH-jJ"
     secret = "Ft-p-NQ5wNg6bWK_apS4jaMD37FHqzgG"
     http_url = "https://api-cn.faceplusplus.com/facepp/v3/detect"
-Attention:
-    Above follows the "sys...."
 """
 
 
@@ -133,6 +131,7 @@ for dirpath, dirnames, filenames in os.walk(path):
                     response = Get_TheFaceScore(belongerFace_JPG_Wholepath)
 
                     json_FaceScore_TheWholePath = dirpath + "\\" + belonger_i + "\\" + "Face_Score.json"
+
                     f1 = open_Json_File_To_Write(json_FaceScore_TheWholePath)
 
-                    write_Score(response, f1, belonger_i)
+                    write_Score(response, f1, belonger[belonger_i])
