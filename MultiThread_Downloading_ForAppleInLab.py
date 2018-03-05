@@ -1,4 +1,6 @@
 # encoding=utf-8
+# Date: 2018-3-5
+# Author: MUJZY
 
 
 import re
@@ -15,7 +17,7 @@ import socket
 import threading
 
 def create_Disk_File(province,city):
-    path2 = "E:\\用户的文件\\"+str(province)+"\\"+str(city)
+    path2 = "F:\\用户的文件\\"+str(province)+"\\"+str(city)
     judgeExisting = os.path.exists(path2)
     if not judgeExisting:
         print(str(path2) + '创建成功！')
@@ -23,11 +25,11 @@ def create_Disk_File(province,city):
     return
 
 def get_province_city_path_ToRead(province,city,input_year,input_month):
-    path_json_source = "E:\\Fast_Prepared_Json\\"+str(province)+"\\"+str(city)+"\\"+input_year+"\\"+input_month
+    path_json_source = "F:\\Fast_Prepared_Json\\"+str(province)+"\\"+str(city)+"\\"+input_year+"\\"+input_month
     return path_json_source
 
 def compose_Path_ToWrite_json(province,city,get_id):
-    path_to_write = "E:\\用户的文件\\"+str(province)+"\\"+str(city)+"\\"+str(get_id)
+    path_to_write = "F:\\用户的文件\\"+str(province)+"\\"+str(city)+"\\"+str(get_id)
     judgeExisting = os.path.exists(path_to_write)
     if not judgeExisting:
         # print(str(path_to_write) + '创建成功！')
@@ -92,7 +94,7 @@ def get_The_JPG_Id(get_composed_url):
     return get_the_JPG_id
 
 def compose_JPG_Dowmload_Path(province,city,get_the_JPG_id,get_id):
-    path = "E:\\用户的文件\\"+str(province)+"\\"+str(city)+"\\"+str(get_id)+"\\"+str(get_the_JPG_id)+".jpg"
+    path = "F:\\用户的文件\\"+str(province)+"\\"+str(city)+"\\"+str(get_id)+"\\"+str(get_the_JPG_id)+".jpg"
     return path
 
 def Download_Pics(the_path_to_download_jpg,get_composed_url,shushu):
@@ -144,18 +146,18 @@ def Download_Pics(the_path_to_download_jpg,get_composed_url,shushu):
                         f = open(the_path_to_download_jpg, 'wb')
                         f.write(resp.content)
                         f.close()
-
-                        judgeExisting = os.path.exists(the_path_to_download_jpg)
-                        if judgeExisting:
-                            mark_state = False
                     except :
                         mark_state = True
 
-                    if n_error_times % 50 == 0:
+                    if n_error_times % 30 == 0:
 
                         time.sleep(1)
                         n_error_times = 0
                         print()
+
+                    judgeExisting = os.path.exists(the_path_to_download_jpg)
+                    if judgeExisting:
+                        mark_state = False
 
                 if shushu % 30 == 0 :
                     print("休息一下")
@@ -221,3 +223,4 @@ gothrough_Source(path_json_source,input_province,input_city,pic_num_least)
 
 print("Ok!")
 mark = input()
+
