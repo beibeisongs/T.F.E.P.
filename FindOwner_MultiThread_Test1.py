@@ -28,9 +28,12 @@ def compose_Data_toWrite(Max_Number, desc_link_jpgname, total_list, sum_SubFaceN
 
     data = {}
 
-    data[desc_link_jpgname[Max_Number]] = total_list[Max_Number]    # <Sample>: "3b9adb14jw1ekd7mc8oe0j20f00qoaar_extraction_1": 7.0
-    data["Belonger"] = desc_link_jpgname[Max_Number]    # <Sample>: "Belonger": "3b9adb14jw1ekd7mc8oe0j20f00qoaar_extraction_1"
-    data["Belonger_sub_face_name"] = sum_SubFaceNames[Max_Number]
+    if total_list == []:
+        data["Attention"]  = "No Face !"
+    else:
+        data[desc_link_jpgname[Max_Number]] = total_list[Max_Number]    # <Sample>: "3b9adb14jw1ekd7mc8oe0j20f00qoaar_extraction_1": 7.0
+        data["Belonger"] = desc_link_jpgname[Max_Number]    # <Sample>: "Belonger": "3b9adb14jw1ekd7mc8oe0j20f00qoaar_extraction_1"
+        data["Belonger_sub_face_name"] = sum_SubFaceNames[Max_Number]
 
     return data
 
@@ -53,15 +56,17 @@ def write_ResultJson(Max_Number, desc_link_jpgname, document_path, total_list, s
 
 def getMaxTot(total_list):
 
+    Max_Number_def = 0  # 点明这个Maz_Number是这个define中的
+
     temp = 0
     for i in range(0, len(total_list)):
 
         if total_list[i] > temp:
 
-            Max_Number = i
+            Max_Number_def = i
             temp = total_list[i]
 
-    return Max_Number   # 返回的值为total_list中最大值的下标
+    return Max_Number_def   # 返回的值为total_list中最大值的下标
 
 
 def Construct_Candidates_List(filenames, document_path):
@@ -160,6 +165,8 @@ def analysor(document_path, get_user_id):   # <Sample>: document_path = 'C:\\用
 
                         subFaceNames.append(desc_link_jpgname[i])
 
+            # <Attention>: 注意！有可能出现total_list是[]的情况
+
             total_list.append(tot)
 
             sum_SubFaceNames.append(subFaceNames)
@@ -201,7 +208,7 @@ def start_SubThread(document_path, get_user_id):
 
 def go_Through_PicsFile(province, city, start_pt):
 
-    path = "C:\\用户的文件\\" + str(province) + "\\" + str(city) # <Sample>: 'C:\\用户的文件\\湖北省\\武汉市'
+    path = "E:\\用户的文件\\" + str(province) + "\\" + str(city) # <Sample>: 'C:\\用户的文件\\湖北省\\武汉市'
 
     AccountFileNumber = 0  # To show the number the Account being read
 
@@ -226,35 +233,49 @@ def go_Through_PicsFile(province, city, start_pt):
 
                 if AccountFileNumber >= start_pt:
 
-                    if os.path.exists(dirpath + "\\" + "Ext_Step_Ok") == True:   # 即存在标记文件夹，则进行下面的操作
+                    mark2 = True
 
-                        Threads_i += 1
+                    while mark2 == True:
 
-                        if Threads_i < 5:   # <Tip>: 我只允许同时存在4条子线程
+                        if os.path.exists(dirpath + "\\" + "Ext_Step_Ok") == True:   # 即存在标记文件夹，则进行下面的操作
 
-                            # 开启多线程，每个账号一个线程
-                            Threads.append(start_SubThread(dirpath + "\\" + get_user_id, get_user_id))
+                            print(" Ext_Step_Ok ! ")
 
-                        else:   # 当轮到第五个线程时，就开始检索前面的线程看有哪一个执行完了，就被join掉
-                            mark = True
+                            Threads_i += 1
 
-                            while (mark == True):
+                            if Threads_i < 5:   # <Tip>: 我只允许同时存在4条子线程
 
-                                time.sleep(1)
+                                # 开启多线程，每个账号一个线程
+                                Threads.append(start_SubThread(dirpath + "\\" + get_user_id, get_user_id))
 
-                                for i in range(0, 4):   # 即遍历Threads[0、1、2、3]的flag变量是True还是False，true为仍在运行，false为停止运行
+                            else:   # 当轮到第五个线程时，就开始检索前面的线程看有哪一个执行完了，就被join掉
+                                mark = True
 
-                                    try:
-                                        if Threads[i].flag == False:
+                                while (mark == True):
 
-                                            Threads[i] = start_SubThread(dirpath + "\\" + get_user_id, get_user_id)
+                                    time.sleep(1)
 
-                                            mark = False
+                                    for i in range(0, 4):   # 即遍历Threads[0、1、2、3]的flag变量是True还是False，true为仍在运行，false为停止运行
 
+                                        try:
+                                            if Threads[i].flag == False:
+
+                                                Threads[i] = start_SubThread(dirpath + "\\" + get_user_id, get_user_id)
+
+                                                mark = False
+
+                                                break
+                                        except:
+                                            print("In Loop: Jump to Next Time ! ")
                                             break
-                                    except:
-                                        print("In Loop: Jump to Next Time ! ")
-                                        break
+
+                            mark2 = False    # <Description>: 从而退出While循环，进入下一个账号的分析统计
+
+                        else:
+                            print("  No Ext_Step_Ok ! ")
+                            mark2 = True
+                            time.sleep(10)
+                            print(" Try again ! ")
 
                 break   # 因为只要满足了filepath == get_user_id + ".json":  # <sample>: 18811860.json
                         # 就应该跳出循环，进入下一个账号了
@@ -321,7 +342,7 @@ city = "武汉市"
 
 print("请输入选择处理的账号起点序号")
 # start_pt = input()
-start_pt = 1
+start_pt = 30760     # <Attention>: 注意！这个账号中是一定有Ext_Step_Ok文件夹的，所以如果后面遇到No Ext_Step_Ok ! 则一定是Faces_Extraction_MultiThread_Test2.py还没有将人脸提取出来
 
 print("Ready to go ! ")
 
