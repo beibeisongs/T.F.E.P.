@@ -23,7 +23,7 @@ Samples:
 """
 
 
-def go_Through_PicsFile(province, city):
+def go_Through_PicsFile(province, city, start_pt):
 
     path = "E:\\用户的文件\\" + str(province) + "\\" + str(city)
 
@@ -37,27 +37,30 @@ def go_Through_PicsFile(province, city):
 
                 if filepath == get_user_id + ".json":   # <sample>: 18811860.json
 
-                    if os.path.exists(dirpath + "\\" + get_user_id + "_results.json") == True:
 
-                        AccountFileNumber += 1;
-                        print("这是第 %d 个 账号" % AccountFileNumber)
-                        print(get_user_id)
+                    AccountFileNumber += 1;
+                    print("这是第 %d 个 账号" % AccountFileNumber)
+                    print(get_user_id)
 
-                        break
+                    if AccountFileNumber >= start_pt:
 
-                    # elif os.path.exists(dirpath + "\\" + get_user_id + "_results.json") == False:
-                        # print("No _Results.json File ! ")
+                        if os.path.exists(dirpath + "\\" + get_user_id + "_results.json") == True:
 
-                    if os.path.exists(dirpath + "\\" + "Ext_Step_Ok") == True:
+                            print("_results.json Exsisting !")
 
-                        AccountFileNumber += 1;
-                        print("这是第 %d 个 账号" % AccountFileNumber)
-                        print(get_user_id)
+                            break
 
-                        break
+                        if os.path.exists(dirpath + "\\" + "Ext_Step_Ok") == True:
 
-                    elif os.path.exists(dirpath + "\\" + "Ext_Step_Ok") == False:
-                        print("No Ext_Step_Ok File ! ")
+                            if os.path.exists(dirpath + "\\" + get_user_id + "\\" + "Results.json") == True:
+
+                                print("Results.json Existing !")
+                                print()
+
+                            break
+
+                        elif os.path.exists(dirpath + "\\" + "Ext_Step_Ok") == False:
+                            print("No Ext_Step_Ok File ! ")
 
 
 
@@ -73,7 +76,9 @@ print("请输入要处理的文件所属城市：")
 city = "武汉市"
 
 print("请输入选择处理的账号起点序号")
+# start_pt = input()
+start_pt = 30760
 
 print("Ready to go ! ")
 
-go_Through_PicsFile(province, city)
+go_Through_PicsFile(province, city, start_pt)
