@@ -339,12 +339,16 @@ def read_JsonFiles(path, get_user_id, dirpath):
 
                     for i in range(0, 5):   # 即遍历Threads[0、1、2、3]的flag变量是True还是False，true为仍在运行，false为停止运行
 
-                        if Threads[i].flag == False:
+                        try:
+                            if Threads[i].flag == False:
 
-                            Threads[i] = start_SubThread(path, get_user_id, pic_id, document_path)
+                                Threads[i] = start_SubThread(path, get_user_id, pic_id, document_path)
 
-                            mark = False    # 即准备退出while循环
+                                mark = False    # 即准备退出while循环
 
+                                break
+                        except:
+                            print("In Loop: Try Next Time ! ")  # 因为有可能发生IndexError: list index out of range
                             break
 
     # 检查是否还有未执行完的线程
@@ -356,9 +360,13 @@ def read_JsonFiles(path, get_user_id, dirpath):
         m2 = True   # 假设没有subThread在运行
 
         for j in range(0, 5):
-            if Threads[j].flag == True:
-                m2 = False
-                break
+
+            try:
+                if Threads[j].flag == True:
+                    m2 = False
+                    break
+            except:
+                print("In Loop: Jump to Next Code Line ! ")  # 因为有可能发生IndexError: list index out of range
 
         if m2 == True:
             print("退出While！")
@@ -390,30 +398,51 @@ Samples:
 
 def go_Through_PicsFile(province, city, start_pt):
 
-    path = "C:\\用户的文件\\" + str(province) + "\\" + str(city)
+    path = "E:\\用户的文件\\" + str(province) + "\\" + str(city)
 
     AccountFileNumber = 0  # To show the number the Account being read
 
     for dirpath, dirnames, filenames in os.walk(path):
+
         for filepath in filenames:
 
-            path_Divided = filepath.split('.')
-            get_user_id = path_Divided[0]
+            get_user_id = dirpath.replace(path + "\\", "")  # <Sample>: '18811860'
 
-            path = os.path.join(dirpath, filepath)
-            path_Divided = str(path).split('.')
+            if filepath == get_user_id + ".json":  # <sample>: 18811860.json
 
-            if path_Divided[1] == 'json':
+                """
 
-                print(get_user_id)
+                if os.path.exists(dirpath + "\\" + get_user_id + "_results.json") == True:
+
+                    AccountFileNumber += 1;
+
+                    print("这是第 %d 个 账号" % AccountFileNumber)
+                    print("这个账号是：" + get_user_id)
+                    print()
+
+                    break
+
+                elif os.path.exists(dirpath + "\\" + get_user_id + "_results.json") == False:
+
+                    print("No _Results.json File ! ")
+
+                    AccountFileNumber += 1
+                    print("这是第 %i 个账号" % (AccountFileNumber))
+                    print("这个账号是：" + get_user_id)
+                    
+              """
 
                 AccountFileNumber += 1
                 print("这是第 %i 个账号" % (AccountFileNumber))
+                print("这个账号是：" + get_user_id)
 
                 if AccountFileNumber >= start_pt:
 
-                    read_JsonFiles(path, get_user_id, dirpath)
+                    read_JsonFiles(dirpath + "\\" + get_user_id + ".json", get_user_id, dirpath)
 
+                    break
+
+                break
 
 """
 prepare_detector
@@ -467,16 +496,16 @@ detector, sp, facerec = prepare_detector(predictor_path, face_rec_model_path)
 print("请输入要处理的文件所属省份：")
 
 # province = input()
-province = "广东省"
+province = "湖北省"
 
 print("请输入要处理的文件所属城市：")
 
 # city = input()
-city = "广州市"
+city = "武汉市"
 
 print("请输入选择处理的账号起点序号")
 # start_pt = input()
-start_pt = 1
+start_pt = 43245
 
 print("Ready to go ! ")
 
