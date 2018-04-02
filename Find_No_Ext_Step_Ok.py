@@ -25,7 +25,7 @@ Samples:
 
 def go_Through_PicsFile(province, city, start_pt):
 
-    path = "E:\\用户的文件\\" + str(province) + "\\" + str(city)
+    path = "D:\\用户的文件\\" + str(province) + "\\" + str(city)
 
     AccountFileNumber = 0  # To show the number the Account being read
 
@@ -77,7 +77,7 @@ city = "武汉市"
 
 print("请输入选择处理的账号起点序号")
 # start_pt = input()
-start_pt = 30760
+start_pt = 67635
 
 print("Ready to go ! ")
 

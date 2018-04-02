@@ -208,7 +208,7 @@ def start_SubThread(document_path, get_user_id):
 
 def go_Through_PicsFile(province, city, start_pt):
 
-    path = "E:\\用户的文件\\" + str(province) + "\\" + str(city) # <Sample>: 'C:\\用户的文件\\湖北省\\武汉市'
+    path = "D:\\用户的文件\\" + str(province) + "\\" + str(city) # <Sample>: 'C:\\用户的文件\\湖北省\\武汉市'
 
     AccountFileNumber = 0  # To show the number the Account being read
 
@@ -342,7 +342,7 @@ city = "武汉市"
 
 print("请输入选择处理的账号起点序号")
 # start_pt = input()
-start_pt = 36725     # <Attention>: 注意！这个账号中是一定有Ext_Step_Ok文件夹的，所以如果后面遇到No Ext_Step_Ok ! 则一定是Faces_Extraction_MultiThread_Test2.py还没有将人脸提取出来
+start_pt = 67635    # <Attention>: 注意！这个账号中是一定有Ext_Step_Ok文件夹的，所以如果后面遇到No Ext_Step_Ok ! 则一定是Faces_Extraction_MultiThread_Test2.py还没有将人脸提取出来
 
 print("Ready to go ! ")
 

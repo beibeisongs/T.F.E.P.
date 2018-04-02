@@ -377,7 +377,13 @@ def read_JsonFiles(path, get_user_id, dirpath):
 
     # 结束该账号的人脸提取，并创建一个“Ext_Ok”文件夹，以标记该账号已经完成人脸提取
     dirpath = dirpath + "\\" + "Ext_Step_Ok"    # <Sample>: D:\\用户的文件\\广东省\\广州市\\18811860\\Ext_Step_Ok
-    os.makedirs(dirpath)
+
+    # To solve the problem following : FileExistsError: [WinError 183] 当文件已存在时，无法创建该文件。: 'D:\\用户的文件\\湖北省\\武汉市\\2813127262\\Ext_Step_Ok'
+    if not os.path.exists(dirpath):
+
+        os.makedirs(dirpath)
+    else :
+        print("Already Existing Ext_Step_Ok ! ")
 
 
 """
@@ -398,7 +404,7 @@ Samples:
 
 def go_Through_PicsFile(province, city, start_pt):
 
-    path = "E:\\用户的文件\\" + str(province) + "\\" + str(city)
+    path = "D:\\用户的文件\\" + str(province) + "\\" + str(city)
 
     AccountFileNumber = 0  # To show the number the Account being read
 
@@ -505,7 +511,7 @@ city = "武汉市"
 
 print("请输入选择处理的账号起点序号")
 # start_pt = input()
-start_pt = 43245
+start_pt = 67635
 
 print("Ready to go ! ")
 
