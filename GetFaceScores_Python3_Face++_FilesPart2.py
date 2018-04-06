@@ -7,6 +7,10 @@
 
 import requests
 
+import os.path
+
+from PIL import Image
+
 import json
 from json import JSONDecoder
 
@@ -21,6 +25,7 @@ from Resize_JPG import Calculate_JPGsize
 
 
 def write_Score(response, f1, belonger):
+
     data = {}
 
     data = response
@@ -35,6 +40,7 @@ def write_Score(response, f1, belonger):
 
 
 def open_Json_File_To_Write(path_to_write):
+
     judgeExisting = True
     judgeExisting = os.path.exists(path_to_write)
 
@@ -46,6 +52,7 @@ def open_Json_File_To_Write(path_to_write):
 
 
 def Get_TheFaceScore(belongerFace_JPG_Wholepath):
+
     """
     def use_base64_img(filename):
         with open(filename, 'rb') as f:
@@ -83,6 +90,27 @@ def Get_TheFaceScore(belongerFace_JPG_Wholepath):
     return response
 
 
+def get_theMaxPic(belonger, belonger_sub_face_name, dirpath, get_user_id):
+
+    belongerFace_JPG_Wholepath = dirpath + "\\" + get_user_id + "\\" + belonger  # <Attention>: 这里已经包含了文件后缀“.jpg”
+    belonger_size = Calculate_JPGsize(belongerFace_JPG_Wholepath)
+    temp_size = belonger_size
+    temp_name = belonger
+    temp_whole_path = belongerFace_JPG_Wholepath
+
+    for i in range(0, len(belonger_sub_face_name)):
+
+        belongerSubFace_JPG_Wholepath = dirpath + "\\" + get_user_id + "\\" + belonger_sub_face_name[i]  # <Attention>: 这里已经包含了文件后缀“.jpg”
+        belonger_subface_size = Calculate_JPGsize(belongerSubFace_JPG_Wholepath)
+
+        if (belonger_subface_size[0] * belonger_subface_size[1]) > (temp_size[0] * temp_size[1]):
+            temp_size = belonger_subface_size
+            temp_name = belonger_sub_face_name[i]
+            temp_whole_path = belongerSubFace_JPG_Wholepath
+
+    return temp_size, temp_name, temp_whole_path
+
+
 def get_JsonResultsSource_Belonger(json_results_source_wholepath):
 
     f1 = open(json_results_source_wholepath, mode='r')
@@ -91,8 +119,9 @@ def get_JsonResultsSource_Belonger(json_results_source_wholepath):
 
         rline = json.loads(line)
         belonger = rline["Belonger"]  # <Sample>: <type 'list'>: [u'011f0bd4jw1ek0s5x0uysj20qo0zkwn2_extraction_1', u'011f0bd4jw1ekdf0acjsmj218g0xcduc_extraction_1']
+        belonger_sub_face_name = rline["Belonger_sub_face_name"]
 
-    return belonger
+    return belonger, belonger_sub_face_name
 
 
 """
@@ -140,11 +169,10 @@ for dirpath, dirnames, filenames in os.walk(path):
 
                         json_results_source_wholepath = dirpath + "\\" + get_user_id + "\\" + "Results.json"
 
-                        belonger = get_JsonResultsSource_Belonger(json_results_source_wholepath)
+                        belonger, belonger_sub_face_name = get_JsonResultsSource_Belonger(json_results_source_wholepath)
 
-                        belongerFace_JPG_Wholepath = dirpath + "\\" + get_user_id + "\\" + belonger # <Attention>: 这里已经包含了文件后缀“.jpg”
-
-                        size = Calculate_JPGsize(belongerFace_JPG_Wholepath)
+                        # <Attention>: 下面指令筛选出了主人的脸中相对最大的那张脸
+                        size, belonger,  belongerFace_JPG_Wholepath = get_theMaxPic(belonger, belonger_sub_face_name, dirpath, get_user_id)
 
                         if (size[0] < 48) | (size[1] < 48):
 

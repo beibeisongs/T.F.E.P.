@@ -119,6 +119,8 @@ city = "武汉市"
 
 path = "C:\\用户的文件\\" + province + "\\" + city
 
+file_i = 0
+
 for dirpath, dirnames, filenames in os.walk(path):
     for filepath in filenames:
 
@@ -128,8 +130,13 @@ for dirpath, dirnames, filenames in os.walk(path):
         if str1 in filepath:
             if str2 in filepath:
 
+                file_i += 1
+                print("这是第 %i 个账号" %(file_i))
+
                 json_results_source_wholepath = dirpath + "\\" + filepath   # <Sample>: 'C:\\用户的文件\\湖北省\\武汉市\\1000702851\\1000702851_results.json'
-                belonger, belonger_sub_face = get_JsonResultsSource_Belonger(json_results_source_wholepath)  # ?? : ????????list
+                belonger, belonger_sub_face = get_JsonResultsSource_Belonger(json_results_source_wholepath)
+
+                print(dirpath)
 
                 for belonger_i in range(0, len(belonger)) :  # <class 'list'>: ['3ba58383jw1eihwy6gszij20dc0nqwgy_extraction_1']
 
@@ -153,6 +160,3 @@ for dirpath, dirnames, filenames in os.walk(path):
                     f1 = open_Json_File_To_Write(json_FaceScore_TheWholePath)
 
                     write_Score(req_dict, f1, belonger[belonger_i])
-            else:
-
-                print("No _results.json ! ")
