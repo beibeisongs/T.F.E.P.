@@ -37,13 +37,8 @@ def write_Score(response, f1, belonger_id):
 
 def open_Json_File_To_Write(path_to_write):
 
-    judgeExisting = True
-    judgeExisting = os.path.exists(path_to_write)
+    f1 = open(path_to_write,mode='w')
 
-    if not judgeExisting:
-        f1 = open(path_to_write,mode='w')
-    else:
-        f1 = open(path_to_write,mode='a')
     return f1
 
 
@@ -117,34 +112,41 @@ print("请输入想要处理的地级市")
 # city = input()
 city = "武汉市"
 
-path = "C:\\用户的文件\\" + province + "\\" + city
+path = "D:\\用户的文件\\" + province + "\\" + city
 
 file_i = 0
+
+start_pt = 29899
 
 for dirpath, dirnames, filenames in os.walk(path):
     for filepath in filenames:
 
-        str1 = "json"
-        str2 = "results"
+        get_user_id = dirpath.replace(path + "\\", "")  # <Sample>: get_user_id = '18811860'
 
-        if str1 in filepath:
-            if str2 in filepath:
+        if filepath == get_user_id + ".json":  # <sample>: 18811860.json
 
-                file_i += 1
-                print("这是第 %i 个账号" %(file_i))
+            # <sample>: dirpath = C:\用户的文件\湖北省\武汉市\1000270434
+            file_i += 1
+            print("这是第 %i 个账号" % (file_i))
+            print("这个账号是：" + get_user_id)
 
-                json_results_source_wholepath = dirpath + "\\" + filepath   # <Sample>: 'C:\\用户的文件\\湖北省\\武汉市\\1000702851\\1000702851_results.json'
+            if os.path.exists(dirpath + "\\" + "Ext_Step_Ok") == True:
+                exit(0)
+
+            if file_i >= start_pt:
+
+                json_results_source_wholepath = dirpath + "\\" + get_user_id + "_results.json"  # <Sample>: 'C:\\用户的文件\\湖北省\\武汉市\\1000702851\\1000702851_results.json'
                 belonger, belonger_sub_face = get_JsonResultsSource_Belonger(json_results_source_wholepath)
 
                 print(dirpath)
 
-                for belonger_i in range(0, len(belonger)) :  # <class 'list'>: ['3ba58383jw1eihwy6gszij20dc0nqwgy_extraction_1']
+                for belonger_i in range(0, len(belonger)):  # <class 'list'>: ['3ba58383jw1eihwy6gszij20dc0nqwgy_extraction_1']
 
-                    belongerFace_JPG_Wholepath = dirpath + "\\" + belonger[belonger_i] + "\\" + belonger_sub_face[belonger_i] + ".jpg"   # <Samples>: dirpath = u'D:\\?????\\???\\???\\18811860'
+                    belongerFace_JPG_Wholepath = dirpath + "\\" + belonger[belonger_i] + "\\" + belonger_sub_face[belonger_i] + ".jpg"  # <Samples>: dirpath = u'D:\\?????\\???\\???\\18811860'
 
                     size = Calculate_JPGsize(belongerFace_JPG_Wholepath)
 
-                    if  (size[0] < 48) | (size[1] < 48) :
+                    if (size[0] < 48) | (size[1] < 48):
                         ResizeImage(belongerFace_JPG_Wholepath, belongerFace_JPG_Wholepath, 80, 80)
 
                     response = Get_TheFaceScore(belongerFace_JPG_Wholepath)
@@ -160,3 +162,7 @@ for dirpath, dirnames, filenames in os.walk(path):
                     f1 = open_Json_File_To_Write(json_FaceScore_TheWholePath)
 
                     write_Score(req_dict, f1, belonger[belonger_i])
+
+            break
+
+
