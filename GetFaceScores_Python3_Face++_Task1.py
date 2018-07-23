@@ -140,29 +140,34 @@ http_url = "https://api-cn.faceplusplus.com/facepp/v3/detect"
 
 print("请输入想要处理的省份")
 # province = input()
-province = "浙江省"
+province = "湖北省"
 
 print("请输入想要处理的地级市")
 # city = input()
-city = "杭州市"
+city = "武汉市"
 
-start_pt = 0
-end_pt = 5
+start_pt = 65000
+end_pt = 130000
 
-path = "E:\\用户的文件\\" + province + "\\" + city
+path = "G:\\用户的文件\\" + province + "\\" + city
 
 AccountFileNumber = 0  # To show the number the Account being read
 
 for dirpath, dirnames, filenames in os.walk(path):
     for filepath in filenames:  # <Sample>: filepath = '1982819117.json'
 
-        get_user_id = dirpath.replace(path + "\\", "")  # <Sample>: get_user_id = '18811860'
+        path_Divided = dirpath.split('\\')
+        get_user_id = path_Divided[4]
 
-        if filepath == get_user_id + ".json":  # <sample>: 18811860.json
-                                                 # <sample>: dirpath = C:\用户的文件\湖北省\武汉市\1000270434
+        path = os.path.join(dirpath, filepath)
+        path_Divided = str(path).split('.')
+
+        if (filepath == get_user_id + ".json"):
+
+            print("账号：", get_user_id)
+
             AccountFileNumber += 1
             print("这是第 %i 个账号" % (AccountFileNumber))
-            print("这个账号是：" + get_user_id)
 
             if (AccountFileNumber >= start_pt) and (AccountFileNumber <= end_pt):
 
