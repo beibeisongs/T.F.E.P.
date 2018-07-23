@@ -208,3 +208,5 @@ for dirpath, dirnames, filenames in os.walk(path):
                             break
 
             elif (AccountFileNumber > end_pt): exit(0)
+
+            break
