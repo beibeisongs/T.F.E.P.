@@ -250,7 +250,7 @@ Description:
 """
 
 
-def read_JsonFiles(path, get_user_id):
+def read_JsonFiles(path, get_user_id, dirpath):
 
     UMARK = avoid_Repeated_JSON(path)
 
@@ -287,6 +287,16 @@ def read_JsonFiles(path, get_user_id):
 
         if pic_id == "E" : break  # 即发现有重复的JPG文件指向，所以退出该for循环
 
+    # 结束该账号的人脸提取，并创建一个“Ext_Ok”文件夹，以标记该账号已经完成人脸提取
+    dirpath = dirpath + "\\" + "Ext_Step_Ok"  # <Sample>: D:\\用户的文件\\广东省\\广州市\\18811860\\Ext_Step_Ok
+
+    # To solve the problem following : FileExistsError: [WinError 183] 当文件已存在时，无法创建该文件。: 'D:\\用户的文件\\湖北省\\武汉市\\2813127262\\Ext_Step_Ok'
+    if not os.path.exists(dirpath):
+
+        os.makedirs(dirpath)
+    else:
+        print("Already Existing Ext_Step_Ok ! ")
+
 
 """
 go_Through_PicsFile(province, city)
@@ -306,27 +316,37 @@ Samples:
 
 def go_Through_PicsFile(province, city):
 
-    path = "C:\\用户的文件\\" + str(province) + "\\" + str(city)
+    path = "D:\\用户的文件\\" + str(province) + "\\" + str(city)
 
     AccountFileNumber = 0  # To show the number the Account being read
 
     for dirpath, dirnames, filenames in os.walk(path):
         for filepath in filenames:
 
-            path_Divided = filepath.split('.')
-            get_user_id = path_Divided[0]
+            path_Divided = dirpath.split('\\')
+            if len(path_Divided) >= 5:
+                get_user_id = path_Divided[4]
 
-            path = os.path.join(dirpath, filepath)
-            path_Divided = str(path).split('.')
+                path = os.path.join(dirpath, filepath)
+                path_Divided = str(path).split('.')
 
-            if path_Divided[1] == 'json':
+                if (filepath == get_user_id + ".json"):
 
-                print(get_user_id)
+                    print("账号：", get_user_id)
 
-                AccountFileNumber += 1
-                print("这是第 %i 个账号" % (AccountFileNumber))
+                    AccountFileNumber += 1
+                    print("这是第 %i 个账号" % (AccountFileNumber))
 
-                read_JsonFiles(path, get_user_id)
+                    if (AccountFileNumber >= start_pt) and (AccountFileNumber <= end_pt):
+
+                        read_JsonFiles(dirpath + "\\" + get_user_id + ".json", get_user_id, dirpath)
+
+                        break
+
+                    elif (AccountFileNumber > end_pt):
+                        exit(0)
+
+                    break
 
 
 """
@@ -387,6 +407,9 @@ print("请输入要处理的文件所属城市：")
 
 # city = input()
 city = "广州市"
+
+start_pt = 120001
+end_pt = 150000
 
 print("Ready to go ! ")
 
