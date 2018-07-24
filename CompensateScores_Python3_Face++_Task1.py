@@ -140,18 +140,20 @@ http_url = "https://api-cn.faceplusplus.com/facepp/v3/detect"
 
 print("请输入想要处理的省份")
 # province = input()
-province = "广东省"
+province = "浙江省"
 
 print("请输入想要处理的地级市")
 # city = input()
-city = "广州市"
+city = "杭州市"
 
 start_pt = 0
-end_pt = 2
+end_pt = 230000
 
 path = "C:\\用户的文件\\" + province + "\\" + city
 
 AccountFileNumber = 0  # To show the number the Account being read
+
+C_array = []
 
 for dirpath, dirnames, filenames in os.walk(path):
     for filepath in filenames:  # <Sample>: filepath = '1982819117.json'
@@ -187,6 +189,9 @@ for dirpath, dirnames, filenames in os.walk(path):
 
                                 if belonger != -1:
 
+                                    C_array.append(get_user_id)
+                                    print("账号：", get_user_id, "需补偿！")
+
                                     # <Attention>: 下面指令筛选出了主人的脸中相对最大的那张脸
                                     size, belonger,  belongerFace_JPG_Wholepath = get_theMaxPic(belonger, belonger_sub_face_name, dirpath, get_user_id)
 
@@ -215,3 +220,14 @@ for dirpath, dirnames, filenames in os.walk(path):
                     elif (AccountFileNumber > end_pt): exit(0)
 
                     break
+
+C_dict = {}
+C_dict["names"] = C_array
+
+a = json.dumps(C_dict)
+b = str(a)+'\n'	#注意！！！一定要换行！！！换行！！！！
+print(b)
+
+f1 = open('data.json',mode='w')
+
+f1.write(b)
