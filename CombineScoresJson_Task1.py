@@ -38,6 +38,9 @@ def get_JsonScoresSource_Belonger(json_results_source_wholepath):
             get_male_score = get_beauty["male_score"]
 
     except:
+        belonger = -1
+        get_gender_value = -1
+        get_age_value = -1
         get_female_score = -1
         get_male_score = -1
 
@@ -57,7 +60,7 @@ if __name__ == "__main__":
     start_pt = 0
     end_pt = 230000
 
-    path = "C:\\用户的文件\\" + province + "\\" + city
+    path = "D:\\用户的文件\\" + province + "\\" + city
 
     AccountFileNumber = 0  # To show the number the Account being read
 
