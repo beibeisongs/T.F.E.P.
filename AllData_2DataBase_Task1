@@ -21,7 +21,10 @@ def checkText(text, text_check):
             print("len(before) : ", len(before))
             print("utf-8", before.encode('utf-8'))
             print("utf-8", len(before.encode('utf-8')))
-            if len(before.encode('utf-8')) == 4:
+
+            len_before = len(before.encode('utf-8'))
+
+            if (len_before == 4) or (len_before == 1):
                 text = text.replace(text[i], '')
                 print("后来：", text)
                 break
@@ -56,6 +59,9 @@ def commitOrder2(get_user_id, table, idstr, created_at, poiid, title, lon, lat, 
             "NULL" + "," + \
             "NULL" + \
             ");"
+
+    print("账号：", get_user_id)
+    print("process_i : ", process_i)
 
     c.execute(order)
     conn.commit()
@@ -266,6 +272,7 @@ def read_JsonFiles(table, path, get_user_id, dirpath, c, conn, process_i):
                     process_i = exportIDJson(get_user_id, table, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, c, conn, process_i)
 
                     idstr_temp = idstr
+    return process_i
 
 
 def goThrough_Files(table, province, city, path, c, conn):
@@ -335,6 +342,6 @@ if __name__ == "__main__":
 
     c, conn = connectToDatabase()
 
-    path = "F:\\用户的文件\\" + province + "\\" + city
+    path = "C:\\用户的文件\\" + province + "\\" + city
 
     goThrough_Files(table, province, city, path, c, conn)
