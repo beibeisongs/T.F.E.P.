@@ -155,6 +155,31 @@ def readScoresJson(dirpath, get_user_id, c, conn):
             get_female_score = get_beauty["female_score"]
             get_male_score = get_beauty["male_score"]
 
+        table = "id_" + str(get_user_id)
+
+        order = "INSERT INTO " + table + " VALUES (" + "'" + idstr + "'" + ',' + \
+                "NULL" + "," + \
+                "NULL" + "," + \
+                "NULL" + "," + \
+                "NULL" + "," + \
+                "NULL" + "," + \
+                "NULL" + "," + \
+                "'" + str(get_gender_value) + "'" + "," + \
+                str(get_age_value) + "," + \
+                "NULL" + "," + \
+                "NULL" + "," + \
+                str(get_female_score) + "," + \
+                str(get_male_score) + "," + \
+                "'" + str(belonger) + "'" + \
+                ");"
+
+        print("belonger : ", belonger)
+
+        c.execute(order)
+        conn.commit()
+
+        print("Finish export scores_json Info ! ")
+
     except:
 
         belonger = 0
@@ -163,30 +188,7 @@ def readScoresJson(dirpath, get_user_id, c, conn):
         get_female_score = 0
         get_male_score = 0
 
-    table = "id_" + str(get_user_id)
-
-    order = "INSERT INTO " + table + " VALUES (" + "'" + idstr + "'" + ',' + \
-            "NULL" + "," + \
-            "NULL" + "," + \
-            "NULL" + "," + \
-            "NULL" + "," + \
-            "NULL" + "," + \
-            "NULL" + "," + \
-            "'" + str(get_gender_value) + "'" + "," + \
-            str(get_age_value) + "," + \
-            "NULL" + "," + \
-            "NULL" + "," + \
-            str(get_female_score) + "," + \
-            str(get_male_score) + "," + \
-            "'" + str(belonger) + "'" + \
-            ");"
-
-    print("belonger : ", belonger)
-
-    c.execute(order)
-    conn.commit()
-
-    print("Finish export scores_json Info ! ")
+    return get_male_score
 
 
 def createUserTable(get_user_id, c, conn):
@@ -220,37 +222,40 @@ def read_JsonFiles(path, get_user_id, dirpath, c, conn):
 
     createUserTable(get_user_id, c, conn)
 
-    readScoresJson(dirpath, get_user_id, c, conn)
+    get_male_score = 0
+    get_male_score = readScoresJson(dirpath, get_user_id, c, conn)
 
-    f1 = open(path_idjson, encoding='utf-8')
-    print("open id_json_file ok !")
+    if get_male_score != 0:
 
-    line_i = 0
-    idstr_temp = ""
-    for line in f1.readlines():
+        f1 = open(path_idjson, encoding='utf-8')
+        print("open id_json_file ok !")
 
-        line_i += 1
-        print("现在的id_json行数是：", line_i)
+        line_i = 0
+        idstr_temp = ""
+        for line in f1.readlines():
 
-        # rline is carrying the whole json information of the current json file now
-        rline = json.loads(line)
+            line_i += 1
+            print("现在的id_json行数是：", line_i)
 
-        table = "id_" + str(get_user_id)
+            # rline is carrying the whole json information of the current json file now
+            rline = json.loads(line)
 
-        idstr = rline["idstr"]
-        if line_i == 1:
-            idstr_temp = idstr
+            table = "id_" + str(get_user_id)
 
-            created_at, poiid, title, lon, lat, gender, text, street_address = getUserElements(rline)
-            exportIDJson(table, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, c, conn)
-
-        else:
-            if idstr != idstr_temp:
+            idstr = rline["idstr"]
+            if line_i == 1:
+                idstr_temp = idstr
 
                 created_at, poiid, title, lon, lat, gender, text, street_address = getUserElements(rline)
                 exportIDJson(table, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, c, conn)
 
-                idstr_temp = idstr
+            else:
+                if idstr != idstr_temp:
+
+                    created_at, poiid, title, lon, lat, gender, text, street_address = getUserElements(rline)
+                    exportIDJson(table, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, c, conn)
+
+                    idstr_temp = idstr
 
 
 def goThrough_Files(province, city, path, c, conn):
