@@ -201,7 +201,7 @@ def createUserTable(get_user_id, c, conn):
             "gender char(2)," + \
             "score_gender char(2)," + \
             "score_age tinyint," + \
-            "text varchar(1000)," + \
+            "text varchar(10000)," + \
             "street_address varchar(120)," + \
             "female_score float," + \
             "male_score float," + \
