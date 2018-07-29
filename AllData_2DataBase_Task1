@@ -1,0 +1,319 @@
+# encoding=utf-8
+# Date: 2018-7-29
+# Author: MJUZY
+
+
+import os
+import json
+import pymysql
+
+
+def checkText(text, text_check):
+
+    Loop_Mark = True
+    while Loop_Mark:
+
+        length = len(text)
+        i = 0
+        for i in range(length):
+            before = text[i]
+            print("before : ", before)
+            print("len(before) : ", len(before))
+            print("utf-8", before.encode('utf-8'))
+            print("utf-8", len(before.encode('utf-8')))
+            if len(before.encode('utf-8')) == 4:
+                text = text.replace(text[i], '')
+                print("后来：", text)
+                break
+
+        if i == length - 1:
+            Loop_Mark = False
+
+    print(Loop_Mark)
+
+    text_check = True
+
+    return text, text_check
+
+
+def commitOrder2(table, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, c, conn):
+
+    order = "INSERT INTO " + table + " VALUES (" + "'" + idstr + "'" + ',' + \
+            "'" + created_at + "'" + "," + \
+            "'" + title + "'" + "," + \
+            "'" + poiid + "'" + "," + \
+            "'" + str(lon) + "'" + "," + \
+            "'" + str(lat) + "'" + "," + \
+            "'" + gender + "'" + "," + \
+            "NULL" + "," + \
+            "NULL" + "," + \
+            "'" + text + "'" + "," + \
+            "'" + street_address + "'" + "," + \
+            "NULL" + "," + \
+            "NULL" + "," + \
+            "NULL" + \
+            ");"
+
+    c.execute(order)
+    conn.commit()
+
+
+def exportIDJson(table, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, c, conn):
+
+    try:
+        commitOrder2(table, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, c, conn)
+    except:
+        text = str(text)
+        text_check = False
+        text, text_check = checkText(text, text_check)
+        print("text : ", text)
+        print("text-check", text_check)
+
+        commitOrder2(table, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, c, conn)
+
+    print("Finish export scores_json Info ! ")
+
+
+def getUserElements(rline):
+
+    created_at = rline["created_at"]
+
+    try:
+        annotations = rline["annotations"]
+        annotation_0 = annotations[0]
+        place = annotation_0["place"]
+
+        poiid = place["poiid"]
+        title = place["title"]
+
+    except:
+        poiid = "NULL"
+        title = "NULL"
+
+    geo = rline["geo"]
+    coordinates = geo["coordinates"]
+
+    lon = coordinates[1]
+    lat = coordinates[0]
+
+    try:
+        user = rline["user"]
+        gender = user["gender"]
+    except:
+        gender = "NULL"
+
+
+    try:
+        text = rline["text"]
+
+    except:
+        text = "NULL"
+
+
+    try:
+        url_objects = rline["url_objects"]
+        url_objects_0 = url_objects[0]
+        _object = url_objects_0["object"]
+        __object = _object["object"]
+        address = __object["address"]
+        street_address = address["street_address"]
+    except:
+        street_address = "NULL"
+
+    return created_at, poiid, title, lon, lat, gender, text, street_address
+
+
+def readScoresJson(dirpath, get_user_id, c, conn):
+
+    scores_json_path = dirpath + "\\" + str(get_user_id) + "\\" + "Face_Scores.json"
+
+    idstr = "total"
+
+    try:
+        f2 = open(scores_json_path, encoding='utf-8')
+
+        for line in f2.readlines():
+
+            rline = json.loads(line)
+
+            belonger = rline["Belonger"]  # <Sample>: <type 'list'>: [u'011f0bd4jw1ek0s5x0uysj20qo0zkwn2_extraction_1', u'011f0bd4jw1ekdf0acjsmj218g0xcduc_extraction_1']
+
+            get_faces = rline["faces"]
+            get_faces_dic = get_faces[0]
+            get_attributes = get_faces_dic["attributes"]
+            get_gender = get_attributes["gender"]
+            get_gender_value = get_gender["value"]
+            if get_gender_value == "Female":
+                get_gender_value = 'f'
+            else:
+                get_gender_value = 'm'
+
+            get_age = get_attributes["age"]
+            get_age_value = get_age["value"]
+
+            get_beauty = get_attributes["beauty"]
+            get_female_score = get_beauty["female_score"]
+            get_male_score = get_beauty["male_score"]
+
+    except:
+
+        belonger = 0
+        get_gender_value = 0
+        get_age_value = 0
+        get_female_score = 0
+        get_male_score = 0
+
+    table = "id_" + str(get_user_id)
+
+    order = "INSERT INTO " + table + " VALUES (" + "'" + idstr + "'" + ',' + \
+            "NULL" + "," + \
+            "NULL" + "," + \
+            "NULL" + "," + \
+            "NULL" + "," + \
+            "NULL" + "," + \
+            "NULL" + "," + \
+            "'" + str(get_gender_value) + "'" + "," + \
+            str(get_age_value) + "," + \
+            "NULL" + "," + \
+            "NULL" + "," + \
+            str(get_female_score) + "," + \
+            str(get_male_score) + "," + \
+            "'" + str(belonger) + "'" + \
+            ");"
+
+    print("belonger : ", belonger)
+
+    c.execute(order)
+    conn.commit()
+
+    print("Finish export scores_json Info ! ")
+
+
+def createUserTable(get_user_id, c, conn):
+
+    order = "create table " + "id_" + str(get_user_id) + " (" + \
+            "idstr varchar(20) not null," + \
+            "created_at varchar(30)," + \
+            "title varchar(80)," + \
+            "poiid varchar(30)," + \
+            "lon varchar(15)," + \
+            "lat varchar(15)," + \
+            "gender char(2)," + \
+            "score_gender char(2)," + \
+            "score_age tinyint," + \
+            "text varchar(1000)," + \
+            "street_address varchar(120)," + \
+            "female_score float," + \
+            "male_score float," + \
+            "belonger varchar(70)" + \
+            ");"
+
+    c.execute(order)
+    conn.commit()
+
+    print("Finish Creating table ! ", get_user_id)
+
+
+def read_JsonFiles(path, get_user_id, dirpath, c, conn):
+
+    path_idjson  = path # <Sample>: path_idjson = C:\用户的文件\浙江省\杭州市\1000637114\1000637114.json
+
+    createUserTable(get_user_id, c, conn)
+
+    readScoresJson(dirpath, get_user_id, c, conn)
+
+    f1 = open(path_idjson, encoding='utf-8')
+    print("open id_json_file ok !")
+
+    line_i = 0
+    idstr_temp = ""
+    for line in f1.readlines():
+
+        line_i += 1
+        print("现在的id_json行数是：", line_i)
+
+        # rline is carrying the whole json information of the current json file now
+        rline = json.loads(line)
+
+        table = "id_" + str(get_user_id)
+
+        idstr = rline["idstr"]
+        if line_i == 1:
+            idstr_temp = idstr
+
+            created_at, poiid, title, lon, lat, gender, text, street_address = getUserElements(rline)
+            exportIDJson(table, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, c, conn)
+
+        else:
+            if idstr != idstr_temp:
+
+                created_at, poiid, title, lon, lat, gender, text, street_address = getUserElements(rline)
+                exportIDJson(table, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, c, conn)
+
+                idstr_temp = idstr
+
+
+def goThrough_Files(province, city, path, c, conn):
+
+    AccountFileNumber = 0  # To show the number the Account being read
+
+    for dirpath, dirnames, filenames in os.walk(path):
+        for filepath in filenames:
+
+            path_Divided = dirpath.split('\\')
+            if len(path_Divided) >= 5:
+                get_user_id = path_Divided[4]
+
+                path = os.path.join(dirpath, filepath)
+                path_Divided = str(path).split('.')
+
+                if (filepath == get_user_id + ".json"):
+
+                    print("账号：", get_user_id)
+
+                    AccountFileNumber += 1
+                    print("这是第 %i 个账号" % (AccountFileNumber))
+
+                    if (AccountFileNumber >= start_pt) and (AccountFileNumber <= end_pt):
+
+                        read_JsonFiles(dirpath + "\\" + get_user_id + ".json", get_user_id, dirpath, c, conn)
+
+                        break
+
+                    elif (AccountFileNumber > end_pt):
+                        exit(0)
+
+                    break
+
+
+def connectToDatabase():
+
+    print("Now start connecting the database...")
+
+    # connect to the database
+    conn = pymysql.connect(db='weibo_1', user='root', passwd='270127', host='localhost', charset="utf8")
+    c = conn.cursor()
+
+    print("Finishing connecting to the database Faces ! ")
+
+    return c, conn
+
+
+if __name__ == "__main__":
+
+    print("请输入想要处理的省份")
+    # province = input()
+    province = "浙江省"
+
+    print("请输入想要处理的地级市")
+    # city = input()
+    city = "杭州市"
+
+    start_pt = 0
+    end_pt = 230000
+
+    c, conn = connectToDatabase()
+
+    path = "F:\\用户的文件\\" + province + "\\" + city
+
+    goThrough_Files(province, city, path, c, conn)
