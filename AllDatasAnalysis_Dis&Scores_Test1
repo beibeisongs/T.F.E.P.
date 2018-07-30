@@ -1,0 +1,152 @@
+# encoding=utf-8
+# Date: 2018-7-30
+# Author: MJUZY
+
+
+import csv
+import json
+from sklearn.cluster import KMeans
+import numpy as np
+from matplotlib import pyplot as plt
+
+
+def DisScores_KMeans(distances_record, scores_record):
+
+    distances_vice = []
+    scores_vice = []
+
+    for i in range(len(distances_record)):
+
+        if distances_record[i] != 0:
+            distances_vice.append(distances_record[i])
+            scores_vice.append(scores_record[i])
+
+    x1 = np.array(scores_vice)
+    x2 = np.array(distances_vice)
+    X = np.array(list(zip(x1, x2))).reshape(len(x1), 2)
+
+    colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'b']
+    markers = ['o', 's', 'D', 'v', '^', 'p', '*', '+']
+
+    tests = [1]
+
+    for t in tests:
+
+        kmeans_model = KMeans(n_clusters=t).fit(X)
+
+        for i, l in enumerate(kmeans_model.labels_):
+            plt.plot(x1[i], x2[i], color=colors[l], marker=markers[l])
+
+        plt.show()
+
+
+def getDate(item_time):
+
+    divided = item_time.split(' ')
+    month = divided[1]
+    day = divided[2]
+    year = divided[5]
+
+    return day, month, year
+
+
+def getElements(item2):
+
+    userid = item2[0]
+    idstr = item2[1]
+
+    day, month, year = getDate(item2[2])
+
+    title = item2[4]
+
+    lon = float(item2[5])
+    lat = float(item2[6])
+
+    gender = item2[7]
+    if gender == "Female": gender = 'f'
+    elif gender == "Male": gender = 'm'
+
+    text = item2[8]
+
+    street_address = item2[9]
+
+    age = item2[10]
+
+    female_score = item2[11]
+    male_score = item2[12]
+    score = (float(female_score) + float(male_score)) / 2
+
+    return score, lon, lat, userid
+
+
+def goThroughCSV(csv_name):
+
+    userid_temp = ""
+
+    distances_record = []
+    lon_temp = 0
+    lat_temp = 0
+
+    scores_record = []
+
+    users_num_passed = 0
+
+    line_i = 0
+    with open(csv_name, "r") as csvfile:
+        reader2 = csv.reader(csvfile)  # 读取csv文件，返回的是迭代类型
+        for item2 in reader2:
+            line_i += 1
+            print("现在的行数是：", line_i)
+
+            if (line_i >= start_pt) and (line_i <= end_pt):
+
+                score, lon, lat, userid = getElements(item2)
+                if line_i == 1:
+                    userid_temp = userid
+                    distances_record.append(0)
+                    lon_temp = lon
+                    lat_temp = lat
+                    users_num_passed += 1
+
+                    scores_record.append(0)
+                    scores_record[users_num_passed - 1] = score
+
+                elif userid == userid_temp:
+                    distances_record[users_num_passed - 1] += ((lon_temp - lon) * 100)**2 + ((lat_temp - lat) * 1000)**2
+                    print(lon_temp - lon, lat_temp - lat)
+
+                elif userid_temp != userid:
+                    userid_temp = userid
+                    distances_record.append(0)
+                    lon_temp = lon
+                    lat_temp = lat
+
+                    users_num_passed += 1
+
+                    scores_record.append(0)
+                    scores_record[users_num_passed - 1] = score
+
+            else:
+                break
+    """
+    print(distances_record)
+    print(len(distances_record))
+    print(scores_record)
+    print(len(scores_record))
+    """
+
+    csvfile.close()
+
+    DisScores_KMeans(distances_record, scores_record)
+
+
+if __name__ == "__main__":
+
+    # b = [12, 22, 27, 33, 40, 50, 63, 88]
+    b = [16, 22, 27, 33, 40, 50, 63, 88]
+
+    start_pt = 0
+    end_pt = 100000
+
+    csv_name = "16_22.csv"
+    goThroughCSV(csv_name)
