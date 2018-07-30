@@ -17,22 +17,22 @@ def checkText(text, text_check):
         i = 0
         for i in range(length):
             before = text[i]
-            print("before : ", before)
-            print("len(before) : ", len(before))
-            print("utf-8", before.encode('utf-8'))
-            print("utf-8", len(before.encode('utf-8')))
+            # print("before : ", before)
+            # print("len(before) : ", len(before))
+            # print("utf-8", before.encode('utf-8'))
+            # print("utf-8", len(before.encode('utf-8')))
 
             len_before = len(before.encode('utf-8'))
 
             if (len_before == 4) or (len_before == 1):
                 text = text.replace(text[i], '')
-                print("后来：", text)
+                # print("后来：", text)
                 break
 
         if i == length - 1:
             Loop_Mark = False
 
-    print(Loop_Mark)
+    # print(Loop_Mark)
 
     text_check = True
 
@@ -215,19 +215,19 @@ def createUserTable(c, conn):
             "number varchar(20) not null," + \
             "userid varchar(20) not null," + \
             "idstr varchar(20) not null," + \
-            "created_at varchar(30)," + \
-            "title varchar(80)," + \
-            "poiid varchar(30)," + \
-            "lon varchar(15)," + \
-            "lat varchar(15)," + \
-            "gender char(2)," + \
-            "score_gender char(2)," + \
+            "created_at varchar(50)," + \
+            "title varchar(500)," + \
+            "poiid varchar(60)," + \
+            "lon varchar(20)," + \
+            "lat varchar(20)," + \
+            "gender varchar(4)," + \
+            "score_gender varchar(4)," + \
             "score_age tinyint," + \
             "text varchar(10000)," + \
-            "street_address varchar(120)," + \
+            "street_address varchar(300)," + \
             "female_score float," + \
             "male_score float," + \
-            "belonger varchar(70)" + \
+            "belonger varchar(100)" + \
             ");"
 
     c.execute(order)
@@ -253,7 +253,7 @@ def read_JsonFiles(table, path, get_user_id, dirpath, c, conn, process_i):
         for line in f1.readlines():
 
             line_i += 1
-            print("现在的id_json行数是：", line_i)
+            # print("现在的id_json行数是：", line_i)
 
             # rline is carrying the whole json information of the current json file now
             rline = json.loads(line)
@@ -342,6 +342,6 @@ if __name__ == "__main__":
 
     c, conn = connectToDatabase()
 
-    path = "C:\\用户的文件\\" + province + "\\" + city
+    path = "E:\\用户的文件\\" + province + "\\" + city
 
     goThrough_Files(table, province, city, path, c, conn)
