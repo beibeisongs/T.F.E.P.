@@ -34,6 +34,8 @@ def checkText(text, text_check):
 
         if i == length - 1:
             Loop_Mark = False
+        if length == 0:
+            break
 
     # print(Loop_Mark)
 
@@ -42,24 +44,23 @@ def checkText(text, text_check):
     return text, text_check
 
 
-def commitOrder2(csv_filename, get_user_id, idstr, created_at, poiid, title, lon, lat, gender, text, street_address):
+def commitOrder2(csv_filename, get_user_id, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, get_age_value, get_female_score, get_male_score, belonger):
 
     csvFile2 = open(csv_filename, 'a+', newline='')  # 设置newline，否则两行之间会空一行
     writer = csv.writer(csvFile2)
 
-    datas = [get_user_id, idstr, created_at, poiid, title, lon, lat, gender, text, street_address]
+    datas = [get_user_id, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, get_age_value, get_female_score, get_male_score, belonger]
 
     writer.writerow(datas)
 
     csvFile2.close()
 
 
-def exportIDJson(csv_filename, get_user_id, idstr, created_at, poiid, title, lon, lat, gender, text, street_address):
+def exportIDJson(csv_filename, get_user_id, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, get_age_value, get_female_score, get_male_score, belonger):
 
     try:
-        commitOrder2(csv_filename, get_user_id, idstr, created_at, poiid, title, lon, lat, gender, text, street_address)
+        commitOrder2(csv_filename, get_user_id, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, get_age_value, get_female_score, get_male_score, belonger)
         print("Finish export scores_json Info ! ")
-        return
     except:
         text = str(text)
         text_check = False
@@ -67,40 +68,23 @@ def exportIDJson(csv_filename, get_user_id, idstr, created_at, poiid, title, lon
         print("text : ", text)
         print("text-check", text_check)
 
-    try:
-        commitOrder2(csv_filename, get_user_id, idstr, created_at, poiid, title, lon, lat, gender, text, street_address)
-        print("Finish export scores_json Info ! ")
-    except:
-        # 实在不行就不要了
+        try:
+            commitOrder2(csv_filename, get_user_id, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, get_age_value, get_female_score, get_male_score, belonger)
+            print("Finish export scores_json Info ! ")
+        except:
+            # 实在不行就不要了
+            text = "NULL"
 
-        print("title : ", title)
-
-        print("text : ", text)
-        text = "NULL"
-
-        print("street_address : ", street_address)
-        street_address = "NULL"
-
-    try:
-        commitOrder2(csv_filename, get_user_id, idstr, created_at, poiid, title, lon, lat, gender, text, street_address)
-        print("Finish export scores_json Info ! ")
-        return
-    except:
-        # 实在不行就不要了
-        print("NULNULNULNUL")
-
-        print("title : ", title)
-        title = "NULL"
-
-        print("text : ", text)
-        text = "NULL"
-
-        print("street_address : ", street_address)
-        street_address = "NULL"
-
-        commitOrder2(csv_filename, get_user_id, idstr, created_at, poiid, title, lon, lat, gender, text, street_address)
-        print("Finish export scores_json Info ! ")
-
+            try:
+                commitOrder2(csv_filename, get_user_id, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, get_age_value, get_female_score, get_male_score, belonger)
+                print("Finish export scores_json Info ! ")
+            except:
+                text = "NULL"
+                street_address = "NULL"
+                title = "NULL"
+                poiid = "NULL"
+                commitOrder2(csv_filename, get_user_id, idstr, created_at, poiid, title, lon, lat, gender, text, street_address, get_age_value, get_female_score, get_male_score, belonger)
+					
 
 def getUserElements(rline):
 
@@ -249,15 +233,16 @@ def goThroughFiles(path, b):
                                                     idstr_temp = idstr
 
                                                     created_at, poiid, title, lon, lat, gender, text, street_address = getUserElements(rline)
+                                                    gender = get_gender_value
                                                     exportIDJson(csv_filename, get_user_id, idstr, created_at,
                                                                              poiid, title, lon, lat, gender, text,
-                                                                             street_address)
+                                                                             street_address, get_age_value, get_female_score, get_male_score, belonger)
                                                 else:
                                                     if idstr != idstr_temp:
                                                         created_at, poiid, title, lon, lat, gender, text, street_address = getUserElements(rline)
                                                         exportIDJson(csv_filename, get_user_id, idstr, created_at,
                                                                                  poiid, title, lon, lat, gender, text,
-                                                                                 street_address)
+                                                                                 street_address, get_age_value, get_female_score, get_male_score, belonger)
                                                         idstr_temp = idstr
 
 
