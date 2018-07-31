@@ -3,6 +3,7 @@
 # Author: MJUZY
 
 
+import math
 import csv
 import json
 from sklearn.cluster import KMeans
@@ -16,22 +17,38 @@ def DisScores_KMeans(distances_record, scores_record):
     scores_vice = []
 
     points_total = 0
+    points_40up_50dn = 0
+    points_dissum_40up_50dn = 0
+    points_50up_60dn = 0
+    points_dissum_50up_60dn = 0
     points_60up_70dn = 0
+    points_dissum_60up_70dn = 0
     points_70up_80dn = 0
+    points_dissum_70up_80dn = 0
     points_80up_90dn = 0
+    points_dissum_80up_90dn = 0
 
     for i in range(len(distances_record)):
 
-        if distances_record[i] >= 100000:
+        if (distances_record[i] >= 1000):
             distances_vice.append(distances_record[i])
             scores_vice.append(scores_record[i])
 
+            if (scores_record[i] >= 40) and (scores_record[i] < 50):
+                points_40up_50dn += 1
+                points_dissum_40up_50dn += distances_record[i]
+            if (scores_record[i] >= 50) and (scores_record[i] < 60):
+                points_50up_60dn += 1
+                points_dissum_50up_60dn += distances_record[i]
             if (scores_record[i] >= 60) and (scores_record[i] < 70):
                 points_60up_70dn += 1
+                points_dissum_60up_70dn += distances_record[i]
             if (scores_record[i] >= 70) and (scores_record[i] < 80):
                 points_70up_80dn += 1
+                points_dissum_70up_80dn += distances_record[i]
             if (scores_record[i] >= 80) and (scores_record[i] < 90):
                 points_80up_90dn += 1
+                points_dissum_80up_90dn += distances_record[i]
 
             points_total += 1
 
@@ -52,12 +69,20 @@ def DisScores_KMeans(distances_record, scores_record):
         for i, l in enumerate(kmeans_model.labels_):
             plt.plot(x1[i], x2[i], color=colors[l], markersize=3, marker=markers[l],alpha=0.5)
 
-        plt.show()
+        points_dissum_40up_50dn /= points_40up_50dn
+        points_dissum_50up_60dn /= points_50up_60dn
+        points_dissum_60up_70dn /= points_60up_70dn
+        points_dissum_70up_80dn /= points_70up_80dn
+        points_dissum_80up_90dn /= points_80up_90dn
 
         print("Total points : ", points_total)
-        print("Total points_80up_90dn : ", points_80up_90dn)
-        print("Total points_70up_80dn : ", points_70up_80dn)
-        print("Total points_60up_70dn : ", points_60up_70dn)
+        print("Total points_80up_90dn : ", points_80up_90dn, "Average : ", points_dissum_80up_90dn)
+        print("Total points_70up_80dn : ", points_70up_80dn, "Average : ", points_dissum_70up_80dn)
+        print("Total points_60up_70dn : ", points_60up_70dn, "Average : ", points_dissum_60up_70dn)
+        print("Total points_50up_60dn : ", points_50up_60dn, "Average : ", points_dissum_50up_60dn)
+        print("Total points_40up_50dn : ", points_40up_50dn, "Average : ", points_dissum_40up_50dn)
+
+        plt.show()
 
 
 def getDate(item_time):
@@ -99,6 +124,46 @@ def getElements(item2):
     return score, lon, lat, userid
 
 
+def GetDist(lon_temp_ZP, lon_temp_P2_ZP, lon_temp_P3, lat_temp_ZP, lat_temp_P2_ZP, lat_temp_P3, lon_ZP, lon_P2_ZP, lon_P3, lat_ZP, lat_P2_ZP, lat_P3):
+
+    # The Company used below is "KiloMeter"
+    dist_P1_lon_sq = ((lon_temp_ZP - lon_ZP) * 111)**2
+    dist_P2_lon_sq = ((lon_temp_P2_ZP - lon_P2_ZP) * 1.85)**2
+    dist_P3_lon_sq = ((lon_temp_P3 - lon_P3) * 0.0309)**2
+
+    dist_P1_lat_sq = ((lat_temp_ZP - lat_ZP) * 111) ** 2
+    dist_P2_lat_sq = ((lat_temp_P2_ZP - lat_P2_ZP) * 1.85) ** 2
+    dist_P3_lat_sq = ((lat_temp_P3 - lat_P3) * 0.0309) ** 2
+
+    dis_sum = dist_P1_lon_sq + dist_P2_lon_sq + dist_P3_lon_sq + dist_P1_lat_sq + dist_P2_lat_sq + dist_P3_lat_sq
+
+    return dis_sum
+
+
+def Transfer2TimeType(lon_temp, lat_temp):
+
+    # Part1 Used
+    lon_temp_ZP = int(lon_temp) # Get The Main Number Part
+    lat_temp_ZP = int(lat_temp) # Get The Main Number Part
+
+    lon_temp_minP = (lon_temp - lon_temp_ZP) * 60
+    lat_temp_minP = (lat_temp - lat_temp_ZP) * 60
+
+    # Big letter 'P' refers to the Word "Part"
+    # Part2 Used
+    lon_P2_ZP = int(lon_temp_minP)
+    lat_P2_ZP = int(lat_temp_minP)
+
+    lon_P2_minP = lon_temp_minP - lon_P2_ZP
+    lat_P2_minP = lat_temp_minP - lat_P2_ZP
+
+    # Part3 Used
+    lon_P3 = lon_P2_minP * 60
+    lat_P3 = lat_P2_minP * 60
+
+    return lon_temp_ZP, lon_P2_ZP, lon_P3, lat_temp_ZP, lat_P2_ZP, lat_P3
+
+
 def goThroughCSV(csv_name):
 
     userid_temp = ""
@@ -134,15 +199,21 @@ def goThroughCSV(csv_name):
                     scores_record[users_num_passed - 1] = score
 
                 elif userid == userid_temp:
-                    distances_record[users_num_passed - 1] += ((lon_temp - lon) * 1000)**2 + ((lat_temp - lat) * 10000)**2
-                    print(lon_temp - lon, lat_temp - lat)
-                    print("倍数化：", ((lon_temp - lon) * 1000)**2, ((lat_temp - lat) * 10000)**2)
+
+                    lon_temp_ZP, lon_temp_P2_ZP, lon_temp_P3, lat_temp_ZP, lat_temp_P2_ZP, lat_temp_P3 = Transfer2TimeType(lon_temp, lat_temp)
+                    lon_ZP, lon_P2_ZP, lon_P3, lat_ZP, lat_P2_ZP, lat_P3 = Transfer2TimeType(lon, lat)
+
+                    distances_record[users_num_passed - 1] += GetDist(lon_temp_ZP, lon_temp_P2_ZP, lon_temp_P3, lat_temp_ZP, lat_temp_P2_ZP, lat_temp_P3, lon_ZP, lon_P2_ZP, lon_P3, lat_ZP, lat_P2_ZP, lat_P3)
 
                     point_num += 1
 
                 elif userid_temp != userid:
 
                     distances_record[users_num_passed - 1] /= point_num
+                    # a = distances_record[users_num_passed - 1]
+                    # a = math.sqrt(a)
+                    # distances_record[users_num_passed - 1] = a
+
                     point_num = 0
 
                     userid_temp = userid
@@ -176,7 +247,7 @@ if __name__ == "__main__":
     b = [16, 22, 27, 33, 40, 50, 63, 88]
 
     start_pt = 0
-    end_pt = 40000
+    end_pt = 100000
 
-    csv_name = "16_22.csv"
+    csv_name = "22_27.csv"
     goThroughCSV(csv_name)
