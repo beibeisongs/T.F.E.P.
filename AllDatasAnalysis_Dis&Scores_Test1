@@ -15,29 +15,49 @@ def DisScores_KMeans(distances_record, scores_record):
     distances_vice = []
     scores_vice = []
 
+    points_total = 0
+    points_60up_70dn = 0
+    points_70up_80dn = 0
+    points_80up_90dn = 0
+
     for i in range(len(distances_record)):
 
-        if distances_record[i] != 0:
+        if distances_record[i] >= 100000:
             distances_vice.append(distances_record[i])
             scores_vice.append(scores_record[i])
 
-    x1 = np.array(scores_vice)
-    x2 = np.array(distances_vice)
+            if (scores_record[i] >= 60) and (scores_record[i] < 70):
+                points_60up_70dn += 1
+            if (scores_record[i] >= 70) and (scores_record[i] < 80):
+                points_70up_80dn += 1
+            if (scores_record[i] >= 80) and (scores_record[i] < 90):
+                points_80up_90dn += 1
+
+            points_total += 1
+
+    x1 = np.array(distances_vice)
+    x2 = np.array(scores_vice)
     X = np.array(list(zip(x1, x2))).reshape(len(x1), 2)
 
     colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'b']
     markers = ['o', 's', 'D', 'v', '^', 'p', '*', '+']
 
-    tests = [1]
+    # tests = [1, 2, 3]
+    tests = [3]
 
     for t in tests:
 
         kmeans_model = KMeans(n_clusters=t).fit(X)
 
         for i, l in enumerate(kmeans_model.labels_):
-            plt.plot(x1[i], x2[i], color=colors[l], marker=markers[l])
+            plt.plot(x1[i], x2[i], color=colors[l], markersize=3, marker=markers[l],alpha=0.5)
 
         plt.show()
+
+        print("Total points : ", points_total)
+        print("Total points_80up_90dn : ", points_80up_90dn)
+        print("Total points_70up_80dn : ", points_70up_80dn)
+        print("Total points_60up_70dn : ", points_60up_70dn)
 
 
 def getDate(item_time):
@@ -86,6 +106,7 @@ def goThroughCSV(csv_name):
     distances_record = []
     lon_temp = 0
     lat_temp = 0
+    point_num = 0
 
     scores_record = []
 
@@ -107,21 +128,30 @@ def goThroughCSV(csv_name):
                     lon_temp = lon
                     lat_temp = lat
                     users_num_passed += 1
+                    point_num += 1
 
                     scores_record.append(0)
                     scores_record[users_num_passed - 1] = score
 
                 elif userid == userid_temp:
-                    distances_record[users_num_passed - 1] += ((lon_temp - lon) * 100)**2 + ((lat_temp - lat) * 1000)**2
+                    distances_record[users_num_passed - 1] += ((lon_temp - lon) * 1000)**2 + ((lat_temp - lat) * 10000)**2
                     print(lon_temp - lon, lat_temp - lat)
+                    print("倍数化：", ((lon_temp - lon) * 1000)**2, ((lat_temp - lat) * 10000)**2)
+
+                    point_num += 1
 
                 elif userid_temp != userid:
+
+                    distances_record[users_num_passed - 1] /= point_num
+                    point_num = 0
+
                     userid_temp = userid
                     distances_record.append(0)
                     lon_temp = lon
                     lat_temp = lat
 
                     users_num_passed += 1
+                    point_num += 1
 
                     scores_record.append(0)
                     scores_record[users_num_passed - 1] = score
@@ -146,7 +176,7 @@ if __name__ == "__main__":
     b = [16, 22, 27, 33, 40, 50, 63, 88]
 
     start_pt = 0
-    end_pt = 100000
+    end_pt = 40000
 
     csv_name = "16_22.csv"
     goThroughCSV(csv_name)
