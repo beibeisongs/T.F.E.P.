@@ -64,10 +64,10 @@ if __name__ == "__main__":
     # b = [12, 22, 27, 33, 40, 50, 63, 88]
     b = [16, 22, 27, 33, 40, 50, 63, 88]
 
-    dirpath = "D:\\实验室项目资料\\T.F.E.P.源码\\CompensateScoredUsersJson_Test1\\ForCompensated"
+    dirpath = "D:\\实验室项目资料\\T.F.E.P.源码\\ForCompensated"
 
     start_pt = 0
-    end_pt = 180000
+    end_pt = 190000
 
     csv_name = "33_40.csv"
     goThroughCSV(csv_name, dirpath)
