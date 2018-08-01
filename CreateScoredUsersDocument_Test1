@@ -1,0 +1,73 @@
+# encoding=utf-8
+# Date: 2018-7-30
+# Author: MJUZY
+
+
+import csv
+import os
+
+
+def createDocument(dirpath, userid):
+
+    path = dirpath + "\\" + str(userid)
+    if not os.path.exists(path):
+        os.makedirs(path)
+        print("OK ! ")
+
+
+def getElements(item2):
+
+    userid = item2[0]
+    idstr = item2[1]
+
+    return userid, idstr
+
+
+def goThroughCSV(csv_name, dirpath):
+
+    userid_temp = ""
+
+    users_num_passed = 0
+
+    line_i = 0
+    with open(csv_name, "r") as csvfile:
+        reader2 = csv.reader(csvfile)  # 读取csv文件，返回的是迭代类型
+        for item2 in reader2:
+            line_i += 1
+            print("现在的行数是：", line_i)
+
+            if (line_i >= start_pt) and (line_i <= end_pt):
+
+                userid, idstr = getElements(item2)
+                if line_i == 1:
+                    userid_temp = userid
+                    users_num_passed += 1
+
+                    createDocument(dirpath, userid)
+
+                elif userid == userid_temp:
+                    pass
+
+                elif userid_temp != userid:
+                    userid_temp = userid
+                    users_num_passed += 1
+
+                    createDocument(dirpath, userid)
+            else:
+                break
+
+    csvfile.close()
+
+
+if __name__ == "__main__":
+
+    # b = [12, 22, 27, 33, 40, 50, 63, 88]
+    b = [16, 22, 27, 33, 40, 50, 63, 88]
+
+    dirpath = "D:\\实验室项目资料\\T.F.E.P.源码\\CompensateScoredUsersJson_Test1\\ForCompensated"
+
+    start_pt = 0
+    end_pt = 180000
+
+    csv_name = "33_40.csv"
+    goThroughCSV(csv_name, dirpath)
