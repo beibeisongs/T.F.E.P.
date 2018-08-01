@@ -9,8 +9,11 @@ import os
 
 
 def GetPicNum(rline):
-    getid_pic_ids = rline["pic_ids"]
-    nid = len(getid_pic_ids)
+    try:
+        getid_pic_ids = rline["pic_ids"]
+        nid = len(getid_pic_ids)
+    except:
+        nid = -1
     return nid
 
 
@@ -46,8 +49,7 @@ def getUserID(rline):
     return get_user_id
 
 
-def goThroughJson(json_source_path, outputCSV_dirpath, start_pt, end_pt):
-    process_i = 0
+def goThroughJson(json_source_path, outputCSV_dirpath, start_pt, end_pt, process_i):
     f1 = open(json_source_path, encoding='utf-8')
     for line in f1.readlines():
         rline = json.loads(line)
@@ -58,10 +60,11 @@ def goThroughJson(json_source_path, outputCSV_dirpath, start_pt, end_pt):
             pic_num = GetPicNum(rline)
             if (pic_num == 0) or (pic_num ==1):
                 process_i += 1
-                if (process_i >= start_pt) and (process_i <= end_pt):
+                if (process_i >= start_pt):
                     lon, lat = GetLonLat(rline)
                     Export2CSV(lon, lat, get_user_id, outputCSV_dirpath)
                     print("process_i : ", process_i, get_user_id, "OK !")
+    return process_i
 
 
 def composeJsonPath(dirpath, filepath):
@@ -108,25 +111,28 @@ def GetDate(dirpath):
 
 def walkPath(disk_walkedpath, province, city, year, month, outputCSV_dirpath, start_pt, end_pt):
 
+    process_i = 0
+
     for dirpath,dirnames,filenames in os.walk(disk_walkedpath):
         for filepath in filenames:
 
             # pass    # <Sample>: dirpath = 'E:\\sina\\data\\2014-07-01\\上海市' filepath = '上海市.json'
             get_year, get_month, get_day = GetDate(dirpath)
+            print(get_day)
             get_province = GetProvince(dirpath)
             get_city = GetCity(filepath)
             if (get_year == year) and (get_month == month):
                 if (get_province == province) and (get_city == city):
                         # print("Ok ! ")
                         json_source_path = composeJsonPath(dirpath, filepath)
-                        goThroughJson(json_source_path, outputCSV_dirpath, start_pt, end_pt)
+                        process_i = goThroughJson(json_source_path, outputCSV_dirpath, start_pt, end_pt, process_i)
 
 
 if __name__ == "__main__":
 
     disk_walkedpath = "E:\\sina\\data"
 
-    outputCSV_dirpath = "D:\\实验室项目资料\\T.F.E.P.源码\\CompensateScoredUsersJson_Test1\\ForCompensated"
+    outputCSV_dirpath = "D:\\实验室项目资料\\T.F.E.P.源码\\ForCompensated"
 
     province = "浙江省"
     city = "杭州市"
@@ -135,6 +141,6 @@ if __name__ == "__main__":
     month = "07"
 
     start_pt = 0
-    end_pt = 100
+    end_pt = 0
 
     walkPath(disk_walkedpath, province, city, year, month, outputCSV_dirpath, start_pt, end_pt)
