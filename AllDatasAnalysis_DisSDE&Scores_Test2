@@ -38,6 +38,7 @@ def combineVices(dis_40up_50dn_vice, score_40up_50dn_vice, dis_50up_60dn_vice, s
 
     return distances_vice, scores_vice
 
+
 def DigOutPoints(points_40up_50dn_tuples, points_avg_40up_50dn, errorDigPer):
 
     dis_40up_50dn_vice = []
@@ -46,15 +47,25 @@ def DigOutPoints(points_40up_50dn_tuples, points_avg_40up_50dn, errorDigPer):
     dtype = [('dis', float), ('score', float), ('dis2avg', float)]
 
     DigRank = int(len(points_40up_50dn_tuples) * errorDigPer)
+    print(len(points_40up_50dn_tuples), "--original length")
+    print(DigRank, "--DigRank")
+
+    print(points_avg_40up_50dn, "--avg_Dist")
+
     points_40up_50dn_NewTuples = []
     for i in range(len(points_40up_50dn_tuples)):
         points_40up_50dn_NewTuples.append((points_40up_50dn_tuples[i][0], points_40up_50dn_tuples[i][1], (points_40up_50dn_tuples[i][0] - points_avg_40up_50dn)**2))
     pointsSort = np.array(points_40up_50dn_NewTuples, dtype)
     pointsSort = np.sort(pointsSort, order='dis2avg')
+    print(pointsSort, '--pointSort')
 
     for i in range(len(pointsSort) - DigRank):
         dis_40up_50dn_vice.append(pointsSort[i][0])
         score_40up_50dn_vice.append(pointsSort[i][1])
+
+    for i in range(len(dis_40up_50dn_vice)):
+        print(dis_40up_50dn_vice[i])
+    print('--after_dist')
 
     return dis_40up_50dn_vice, score_40up_50dn_vice
 
@@ -260,7 +271,7 @@ def goThroughCSV(csv_name, errorDigPer):
         reader2 = csv.reader(csvfile)  # 读取csv文件，返回的是迭代类型
         for item2 in reader2:
             line_i += 1
-            print("现在的行数是：", line_i)
+            # print("现在的行数是：", line_i)
 
             if (line_i >= start_pt) and (line_i <= end_pt):
 
@@ -365,9 +376,9 @@ if __name__ == "__main__":
     b = [16, 22, 27, 33, 40, 50, 63, 88]
 
     start_pt = 0
-    end_pt = 50000
+    end_pt = 200000
 
-    errorDigPer = 0.4
+    errorDigPer = 0.05
 
     csv_name = "22_27_CompensateLonLat.csv"
     goThroughCSV(csv_name, errorDigPer)
