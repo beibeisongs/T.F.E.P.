@@ -109,15 +109,18 @@ def DisScores_KMeans(distances_record, scores_record, errorDigPer, n):
 
             points_total += 1
 
-    points_avg_40up_60dn = points_dissum_40up_60dn / points_40up_60dn
+    # points_avg_40up_60dn = points_dissum_40up_60dn / points_40up_60dn
+    points_avg_40up_60dn = points_dissum_40up_60dn / n
     dis_40up_60dn_vice, score_40up_60dn_vice = DigOutPoints(points_40up_60dn_tuples, points_avg_40up_60dn, errorDigPer)
     dis_40up_60dn_vice, score_40up_60dn_vice = GetRandom400(dis_40up_60dn_vice, score_40up_60dn_vice, n)
 
-    points_avg_60up_70dn = points_dissum_60up_70dn / points_60up_70dn
+    # points_avg_60up_70dn = points_dissum_60up_70dn / points_60up_70dn
+    points_avg_60up_70dn = points_dissum_60up_70dn / n
     dis_60up_70dn_vice, score_60up_70dn_vice = DigOutPoints(points_60up_70dn_tuples, points_avg_60up_70dn, errorDigPer)
     dis_60up_70dn_vice, score_60up_70dn_vice = GetRandom400(dis_60up_70dn_vice, score_60up_70dn_vice, n)
 
-    points_avg_70up_90dn = points_dissum_70up_90dn / points_70up_90dn
+    # points_avg_70up_90dn = points_dissum_70up_90dn / points_70up_90dn
+    points_avg_70up_90dn = points_dissum_70up_90dn / n
     dis_70up_90dn_vice, score_70up_90dn_vice = DigOutPoints(points_70up_90dn_tuples, points_avg_70up_90dn, errorDigPer)
     dis_70up_90dn_vice, score_70up_90dn_vice = GetRandom400(dis_70up_90dn_vice, score_70up_90dn_vice, n)
 
@@ -141,9 +144,9 @@ def DisScores_KMeans(distances_record, scores_record, errorDigPer, n):
             plt.plot(x1[i], x2[i], color=colors[l], markersize=3, marker=markers[l],alpha=0.5)
 
         print("Total points : ", points_total)
-        print("Total points_70up_80dn : ", points_70up_90dn, "Average : ", points_dissum_70up_90dn)
-        print("Total points_60up_70dn : ", points_60up_70dn, "Average : ", points_dissum_60up_70dn)
-        print("Total points_50up_60dn : ", points_40up_60dn, "Average : ", points_dissum_40up_60dn)
+        print("Total points_70up_80dn : ", n, "Average : ", points_dissum_70up_90dn)
+        print("Total points_60up_70dn : ", n, "Average : ", points_dissum_60up_70dn)
+        print("Total points_50up_60dn : ", n, "Average : ", points_dissum_40up_60dn)
 
         plt.show()
 
@@ -199,7 +202,7 @@ def GetDist(lon_temp_ZP, lon_temp_P2_ZP, lon_temp_P3, lat_temp_ZP, lat_temp_P2_Z
     dist_P3_lat_sq = ((lat_temp_P3 - lat_P3) * 0.0309) ** 2
 
     dis_sum = math.sqrt(dist_P1_lon_sq + dist_P2_lon_sq + dist_P3_lon_sq) * math.sqrt(dist_P1_lat_sq + dist_P2_lat_sq + dist_P3_lat_sq)
-    SDE_Sqare = math.pi * dis_sum
+    SDE_Sqare = math.pi * dis_sum * 4
 
     return SDE_Sqare
 
