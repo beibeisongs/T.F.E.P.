@@ -3,9 +3,58 @@
 # Author: MJUZY
 
 
+import random
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+
+
+def GetRandom400(dis_40up_50dn_vice, n):
+    dis_40up_50dn_vice2 = []
+    for i in range(n):
+        dis_40up_50dn_vice2.append(random.choice(dis_40up_50dn_vice))
+
+    print()
+
+    dis_40up_50dn_vice2.sort()
+
+    return dis_40up_50dn_vice2
+
+
+def pltShowAll(list_16_22_ROG, list_16_22_total, list_22_27_ROG, list_22_27_total, list_27_33_ROG, list_27_33_total, list_33_40_ROG, list_33_40_total):
+    plt.scatter(list_16_22_ROG, list_16_22_total, cmap=plt.cm.Blues, s=0.5)
+    plt.scatter(list_22_27_ROG, list_22_27_total, cmap=plt.cm.Oranges, s=0.5)
+    plt.scatter(list_27_33_ROG, list_27_33_total, cmap=plt.cm.Greys, s=0.5)
+    plt.scatter(list_33_40_ROG, list_33_40_total, cmap=plt.cm.Greens, s=0.5)
+
+    plt.title("5000 Samples ROG-People Total", fontsize=24)
+
+    plt.xlabel("ROG", fontsize=12)
+    plt.ylabel("Num", fontsize=12)
+
+    # plt.tick_params(axis='both', labelsize=14)
+
+    # plt.axis([0, 1100, 0, 1100000])
+
+    # plt.savefig('D:\\实验室项目资料\\T.F.E.P.源码\\HelpDrawing\\figure.png', bbox_inches='tight')
+
+    plt.show()
+
+
+def plt_show(list_16_22_ROG, list_16_22_total):
+    plt.scatter(list_16_22_ROG, list_16_22_total, cmap=plt.cm.Blues, s=0.5)
+    plt.title("16_22 ROG-People Total", fontsize=24)
+
+    plt.xlabel("ROG", fontsize=12)
+    plt.ylabel("Num", fontsize=12)
+
+    # plt.tick_params(axis='both', labelsize=14)
+
+    # plt.axis([0, 1100, 0, 1100000])
+
+    # plt.savefig('D:\\实验室项目资料\\T.F.E.P.源码\\HelpDrawing\\figure.png', bbox_inches='tight')
+
+    plt.show()
 
 
 def goThroughGaps(boundary, list_16_22, list_16_22_total, list_16_22_ROG, based_gap):
@@ -29,6 +78,7 @@ def goThroughGaps(boundary, list_16_22, list_16_22_total, list_16_22_ROG, based_
             if element_i == length:
                 list_16_22_ROG[n_gap] = gap_value
 
+
                 mark = False
                 return list_16_22_total, list_16_22_ROG
 
@@ -39,7 +89,7 @@ def goThroughGaps(boundary, list_16_22, list_16_22_total, list_16_22_ROG, based_
             n_gap += 1
 
             list_16_22_total.append(0)
-            list_16_22_total[n_gap] = list_16_22_total[n_gap - 1]
+            # list_16_22_total[n_gap] = list_16_22_total[n_gap - 1]
 
             gap_value = gap_value + boundary
 
@@ -54,7 +104,7 @@ def GetElements(item2):
     return age, ROG
 
 
-def readCSV(boundary, csv_name, based_gap):
+def readCSV(boundary, csv_name, based_gap, n):
     line_i = 0
     age_list = []
     ROG_list = []
@@ -107,38 +157,38 @@ def readCSV(boundary, csv_name, based_gap):
             if (pointsSort[i][0] >= 33) and ( pointsSort[i][0] <= 40):
                 list_33_40.append(pointsSort[i][1])
 
+        list_16_22 = GetRandom400(list_16_22, n)
+        list_22_27 = GetRandom400(list_22_27, n)
+        list_27_33 = GetRandom400(list_27_33, n)
+        list_33_40 = GetRandom400(list_33_40, n)
+
         list_16_22_total, list_16_22_ROG = goThroughGaps(boundary, list_16_22, list_16_22_total, list_16_22_ROG, based_gap)
-        for i in range(len(list_16_22_ROG)):
-            print(list_16_22_ROG[i], list_16_22_total[i])
+        #  for i in range(len(list_16_22_ROG)):
+            # print(list_16_22_ROG[i], list_16_22_total[i])
 
-        plt.scatter(list_16_22_ROG, list_16_22_total, cmap=plt.cm.Blues, s=0.5)
-        plt.title("16_22 ROG-People Total", fontsize=24)
+        # plt_show(list_16_22_ROG, list_16_22_total)
 
-        plt.xlabel("ROG", fontsize=12)
-        plt.ylabel("Num", fontsize=12)
-
-        # plt.tick_params(axis='both', labelsize=14)
-
-        # plt.axis([0, 1100, 0, 1100000])
-
-        # plt.savefig('D:\\实验室项目资料\\T.F.E.P.源码\\HelpDrawing\\figure.png', bbox_inches='tight')
-
-        plt.show()
-
-        """
         list_22_27_total, list_22_27_ROG = goThroughGaps(boundary, list_22_27, list_22_27_total, list_22_27_ROG, based_gap)
+        # plt_show(list_22_27_ROG, list_22_27_total)
 
         list_27_33_total, list_27_33_ROG = goThroughGaps(boundary, list_27_33, list_27_33_total, list_27_33_ROG, based_gap)
+        # plt_show(list_27_33_ROG, list_27_33_total)
 
         list_33_40_total, list_33_40_ROG = goThroughGaps(boundary, list_33_40, list_33_40_total, list_33_40_ROG, based_gap)
-        """
+        # plt_show(list_33_40_ROG, list_33_40_total)
+
+        pltShowAll(list_16_22_ROG, list_16_22_total, list_22_27_ROG, list_22_27_total, list_27_33_ROG, list_27_33_total, list_33_40_ROG, list_33_40_total)
+
 
 
 if __name__ == "__main__":
 
     csv_name = "After_add_ROG.csv"
 
-    based_gap = 8 * 1e-5
-    boundary = 0.00001
+    n = 5000
 
-    readCSV(boundary, csv_name, based_gap)
+    # based_gap = 8 * 1e-5
+    based_gap = 0.5
+    boundary = 0.5
+
+    readCSV(boundary, csv_name, based_gap, n)
