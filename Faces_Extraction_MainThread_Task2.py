@@ -200,16 +200,21 @@ def get_Pic_id(rline, UMARK, line_i):
         get_se_url = rline["se_get_large_url"]  # 注意：该path后面有斜杠
         print("get_Pic_id Ok!")
 
-        if line_i != 1 :
-
+        if line_i != 1:
             if get_se_url != UMARK :
-
                 str_divided1 = str(get_se_url).split("e/")
                 str_divided2 = str(str_divided1[1]).split(".")
                 pic_id = str_divided2[0]
-                return pic_id  # 注意：它是没有“.jpg”后缀的
+
+                return pic_id   # 注意：它是没有“.jpg”后缀的
             else :
                 return "E"
+        else:
+            str_divided1 = str(get_se_url).split("e/")
+            str_divided2 = str(str_divided1[1]).split(".")
+            pic_id = str_divided2[0]
+
+            return pic_id  # 注意：它是没有“.jpg”后缀的
     except:
         pic_id = "F"
 
@@ -381,9 +386,9 @@ And the two models are located in the same documents with Face_Exist_Statistics_
 
 def prepare_path_etc():
     # 1、人脸关键点检测器
-    predictor_path = "shape_predictor_68_face_landmarks.dat"
+    predictor_path = "D:/USBei Documents/Dlib_Data/shape_predictor_68_face_landmarks.dat"
     # 2、人脸识别模型：
-    face_rec_model_path = "dlib_face_recognition_resnet_model_v1.dat"
+    face_rec_model_path = "D:/USBei Documents/Dlib_Data/dlib_face_recognition_resnet_model_v1.dat"
 
     return predictor_path, face_rec_model_path
 
@@ -401,15 +406,15 @@ detector, sp, facerec = prepare_detector(predictor_path, face_rec_model_path)
 print("请输入要处理的文件所属省份：")
 
 # province = input()
-province = "广东省"
+province = "上海市"
 
 print("请输入要处理的文件所属城市：")
 
 # city = input()
-city = "广州市"
+city = "上海市"
 
-start_pt = 150001
-end_pt = 190000
+start_pt = 0
+end_pt = 30000
 
 print("Ready to go ! ")
 
