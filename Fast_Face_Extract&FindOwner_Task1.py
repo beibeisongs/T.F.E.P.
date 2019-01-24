@@ -429,6 +429,14 @@ def Having_Unicode_Error(get_user_id, dirpath):
     else:
         return False
 
+def Uid_Json_Exists(get_user_id, dirpath):
+    uid_json_path = dirpath + "\\" + get_user_id + "\\" + get_user_id + ".json"
+
+    if os.path.exists(uid_json_path):
+        return True
+    else:
+        return False
+
 
 def go_Through_PicsFile():
     path = dir_disk + ":\\用户的文件\\" + str(province) + "\\" + str(city)
@@ -449,37 +457,39 @@ def go_Through_PicsFile():
             print()
             print()
 
-            if not Having_Unicode_Error(get_user_id, dirpath):
+            if Uid_Json_Exists(get_user_id, dirpath):
 
-                Finish_Extract_Flag = False
+                if not Having_Unicode_Error(get_user_id, dirpath):
 
-                if not ifFinishExtractFace(get_user_id, dirpath):
-                    try:
-                        read_JsonFiles(dirpath + "\\" + get_user_id + "\\" + get_user_id + ".json",
-                                       get_user_id,
-                                       dirpath + "\\" + get_user_id)
+                    Finish_Extract_Flag = False
 
+                    if not ifFinishExtractFace(get_user_id, dirpath):
+                        try:
+                            read_JsonFiles(dirpath + "\\" + get_user_id + "\\" + get_user_id + ".json",
+                                           get_user_id,
+                                           dirpath + "\\" + get_user_id)
+
+                            Finish_Extract_Flag = True
+
+                        except UnicodeDecodeError:
+                            """
+                            To show the Error ! 
+                            """
+                            print("Unicode Error ! ")
+                            print()
+                            print()
+                            print()
+
+                            if os.path.exists(dirpath + "\\" + get_user_id + "\\" + "UnicodeError") is False:
+                                os.mkdir(dirpath + "\\" + get_user_id + "\\" + "UnicodeError")
+                    else:
                         Finish_Extract_Flag = True
 
-                    except UnicodeDecodeError:
-                        """
-                        To show the Error ! 
-                        """
-                        print("Unicode Error ! ")
-                        print()
-                        print()
-                        print()
+                    if Finish_Extract_Flag:
+                        if not if_Results_Json_Exists(get_user_id, dirpath):
 
-                        if os.path.exists(dirpath + "\\" + get_user_id + "\\" + "UnicodeError") is False:
-                            os.mkdir(dirpath + "\\" + get_user_id + "\\" + "UnicodeError")
-                else:
-                    Finish_Extract_Flag = True
-
-                if Finish_Extract_Flag:
-                    if not if_Results_Json_Exists(get_user_id, dirpath):
-
-                        Find_Owner_Process(dirpath + "\\" + get_user_id + "\\" + get_user_id,
-                                           get_user_id)
+                            Find_Owner_Process(dirpath + "\\" + get_user_id + "\\" + get_user_id,
+                                               get_user_id)
 
             AccountFileNumber += 1
 
@@ -512,12 +522,12 @@ if __name__ == "__main__":
 
     detector, sp, facerec = prepare_detector(predictor_path, face_rec_model_path)
 
-    dir_disk = "E"
+    dir_disk = "D"
 
     province = "上海市"
     city = "上海市"
 
     start_pt = 0
-    end_pt = 3
+    end_pt = 300000
 
     go_Through_PicsFile()
